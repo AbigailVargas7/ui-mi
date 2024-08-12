@@ -1,44 +1,3 @@
-<!--
-<style scoped>
-.login-container {
-  display: flex;
-}
-
-.login-image img {
-  max-width: 100%;
-}
-
-.login-form {
-  margin-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.login-form img {
-  width: 150px;
-  margin-bottom: 20px;
-}
-
-.login-form form {
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-}
-
-.login-form div {
-  margin-bottom: 15px;
-}
-
-.login-links {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
-}
-</style>
--->
-
-
 <template>
   <div class="login-container">
   <!--<div class="contenido-login"> --> 
@@ -64,7 +23,7 @@
 
       <div class="login-links">
         <a href="#" class="link">Recuperar contraseña</a>
-        <a href="#" class="link">Realizar nuevo registro</a>
+        <a href="#" class="link" @click.prevent="goToRegister">Realizar nuevo registro</a>
       </div>
       
     </div>
@@ -85,6 +44,11 @@ export default {
       // Aquí puedes agregar la lógica de autenticación
       console.log('Usuario:', this.username)
       console.log('Contraseña:', this.password)
+      //redirigir a la pagina principal
+      this.$router.push('/panel')
+    },
+    goToRegister(){
+      this.$router.push('/register')
     }
   }
 }
