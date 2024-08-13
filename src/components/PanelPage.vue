@@ -1,22 +1,276 @@
 <template>
-  <div class="panel-container">
-    <h1>Bienvenido al Panel</h1>
-    <!-- Contenido del panel -->
+  <div class="panel-back">
+    <div class="panel-container">
+      <div class="top-bar-background">
+        <header class="top-bar">
+          <img src="@/assets/espol-logo.png" alt="Espol Logo" class="espol-logo" />
+          <div class="account-info">
+            <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
+            <span>Mi Cuenta</span>
+          </div>
+        </header>
+      </div>
+      <div class="content">
+        <div class="left-section">
+          <h3>Criterios y Parámetros Eléctricos de Inversor</h3>
+          <div class="input-group">
+            <label for="voltage">Voltaje (V)</label>
+            <input type="text" id="voltage" placeholder="V" />
+          </div>
+          <div class="input-group">
+            <label for="current">Corriente (mA)</label>
+            <input type="text" id="current" placeholder="A" />
+          </div>
+          <div class="input-group">
+            <label for="power">Potencia (W)</label>
+            <input type="text" id="power" placeholder="W" />
+          </div>
+          <button class="history-button">Ver Histórico de Datos</button>
+          <a href="#" class="more-info-link">Más información del Sistema</a>
+        </div>
+
+        <div class="separator"></div>
+
+        <div class="right-section">
+          <h3>Vista de Cámara</h3>
+          <div class="camera-view">
+            <img src="@/assets/no-video.png" alt="No Video" />
+          </div>
+          
+          <h3>Control de Inclinación de Paneles</h3>
+          <div class="control-group">
+            <div class="control-item">
+              <button class="control-button">+</button>
+              <input type="text" placeholder="Ángulo panel 1" />
+              <button class="control-button">-</button>
+            </div>
+            <div class="control-item">
+              <button class="control-button">+</button>
+              <input type="text" placeholder="Ángulo panel 2" />
+              <button class="control-button">-</button>
+            </div>
+            <div class="control-item">
+              <button class="control-button">+</button>
+              <input type="text" placeholder="Ángulo panel 3" />
+              <button class="control-button">-</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'PanelPage'
-}
+  name: "PanelPage",
+};
 </script>
 
 <style scoped>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.panel-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+
 .panel-container {
   display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.top-bar-background {
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(
+    to right,
+    rgba(0, 210, 246, 0.4) 0%,
+    rgba(138, 174, 229, 0.4) 17%,
+    rgba(29, 162, 186, 0.4) 40%,
+    rgba(103, 218, 239, 0.4) 60%,
+    rgba(169, 242, 255, 0.4) 75%,
+    rgba(29, 162, 186, 0.4) 100%
+  );
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  margin: 0;
+  height: 100%;
+  padding: 0;
+}
+
+.espol-logo {
+  height: 40px;
+  margin-left : 30px;
+}
+
+.account-info {
+  display: flex;
+  align-items: center;
+  color: #000000;
+}
+
+.user-icon {
+  height: 30px;
+  margin-right: 20px;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding: 20px;
+}
+
+.left-section {
+  flex: 1;
+  margin-left: 20px;
+  margin-right: 30px;
+  font-weight: bold;
+  font-size: 14px; 
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.right-section {
+  flex: 1;
+  margin-left: 30px;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f0f0f0;
+}
+
+.separator {
+  width: 2px;
+  background-color: #ccc;
+  margin: 0;
+}
+
+h3 {
+  font-size: 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-weight: 600; 
+  text-decoration: underline;
+  margin-bottom: 20px;
+  color:#000000;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.input-group input {
+  width: 50%; 
+  padding: 2px; 
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #ffffff;
+}
+
+.history-button {
+  padding: 0px;
+  background-color: white;
+  color: #23a6f0;
+  border: 2px solid #23a6f0;
+  border-radius: 40px; /* Bordes redondeados */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px; /* Tamaño de la fuente ajustado */
+  width: 208px; /* Ancho ajustado */
+  height: 35px; /* Altura ajustada */
+  margin: 30px auto;
+}
+
+.camera-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 190px;
+  width: 70%;
+  background-color: #000;
+  margin-bottom: 20px;
+}
+
+.camera-view img {
+  width: 100%;
+  height: 100%;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.control-button {
+  padding: 8px;
+  background-color: #23a6f0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.control-item input {
+  flex: 1;
+  padding: 2px;
+  margin: 0 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 50%; 
+  background-color: #ffffff;
+}
+.more-info-link {
+  color: #8b8b8b;
+  text-decoration: underline;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 0 auto;
+}
+.more-info-link:hover {
+  color: #000000;
+  text-decoration: none; 
 }
 </style>

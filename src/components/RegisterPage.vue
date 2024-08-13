@@ -6,14 +6,16 @@
         <div class="form-container">
           <div class="form-group">
             <label for="username">Ingrese su Usuario</label>
-            <input type="text" id="username" placeholder="Nombre de usuario" />
+            <input type="text" id="username" placeholder="Nombre de usuario" required />
           </div>
           <div class="form-group">
             <label for="email">Ingrese su correo</label>
             <input
               type="email"
               id="email"
+              v-model="email"
               placeholder="usuario@institucion.edu.ec"
+              required
             />
           </div>
           <div class="form-group">
@@ -21,7 +23,10 @@
             <input
               type="password"
               id="password"
-              placeholder="Crea tu contraseña"
+              v-model="password"
+              placeholder="Cree su contraseña"
+              minlength="8"
+              required
             />
           </div>
           <div class="form-group">
@@ -29,29 +34,44 @@
             <input
               type="password"
               id="confirm-password"
-              placeholder="Crea tu contraseña"
+              v-model="confirmPassword"
+              placeholder="Confirme su contraseña"
+              required
             />
           </div>
-          <button type="submit" class="register-button">
-            Guardar Registro
-          </button>
+          <button type="submit" class="register-button"> Guardar Registro </button>
         </div>
       </form>
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: "RegisterPage",
+  data() {
+    return {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
+  },
   methods: {
     handleRegister() {
-      // Aquí puedes agregar la lógica de registro si es necesario
-
-      // Redirigir a PanelPage después de registrar
+      if (this.password.length < 8) {
+        alert("La contraseña debe tener al menos 8 caracteres");
+        return;
+      }
+      if (this.password !== this.confirmPassword ) {
+        alert("Las contraseñas no coinciden");
+        return;
+      }
       this.$router.push("/");
     },
-  },
+    goBack() {
+      this.$router.push("/");
+    }
+  }
 };
 </script>
 
@@ -124,7 +144,31 @@ body {
   border-radius: 5px;
   font-size: 14px;
 }
+.back-button{
+  position: absolute;
+  top: 20px; 
+  left: 20px; 
+  width: 40px;
+  height: 40px;
+  background-color: white; /* Fondo blanco del botón */
+  border: 2px solid #1e90ff; /* Borde de color azul */
+  border-radius: 50%; /* Hace que el botón sea redondo */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease; /* Suaviza la transición del fondo */
+}
+.back-button::before {
+  content: '←'; /* Flecha de retroceso */
+  color: #1e90ff; /* Color de la flecha */
+  font-size: 25px;
+  font-weight: bold;
+}
 
+.back-button:hover {
+  background-color: #f0f0f0;
+}
 .register-button {
   padding: 0px;
   background-color: white;
