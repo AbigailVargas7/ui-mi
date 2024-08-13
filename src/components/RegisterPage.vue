@@ -6,7 +6,13 @@
         <div class="form-container">
           <div class="form-group">
             <label for="username">Ingrese su Usuario</label>
-            <input type="text" id="username" placeholder="Nombre de usuario" required />
+            <input 
+              type="text" 
+              id="username" 
+              v-model="username" 
+              placeholder="Nombre de usuario" 
+              required 
+            />
           </div>
           <div class="form-group">
             <label for="email">Ingrese su correo</label>
@@ -40,39 +46,57 @@
             />
           </div>
           <button type="submit" class="register-button"> Guardar Registro </button>
+          <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
       </form>
     </div>
   </div>
 </template>
+
 <script>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../main';
+
 export default {
-  name: "RegisterPage",
-  data() {
+  setup() {
+    const username = ref('');
+    const email = ref('');
+    const password = ref('');
+    const confirmPassword = ref('');
+    const errorMessage = ref('');
+    const router = useRouter();
+
+    const handleRegister = async () => {
+      if (password.value !== confirmPassword.value) {
+        errorMessage.value = "Las contraseñas no coinciden.";
+        return;
+      }
+
+      try {
+        await createUserWithEmailAndPassword(auth, email.value, password.value);
+        router.push('/panel');
+      } catch (error) {
+        errorMessage.value = "Error de registro: " + error.message;
+      }
+    };
+
+    const goBack = () => {
+      router.push('/'); // Redirige a la página de login
+    };
+
     return {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    }
-  },
-  methods: {
-    handleRegister() {
-      if (this.password.length < 8) {
-        alert("La contraseña debe tener al menos 8 caracteres");
-        return;
-      }
-      if (this.password !== this.confirmPassword ) {
-        alert("Las contraseñas no coinciden");
-        return;
-      }
-      this.$router.push("/");
-    },
-    goBack() {
-      this.$router.push("/");
-    }
+      username,
+      email,
+      password,
+      confirmPassword,
+      handleRegister,
+      goBack,
+      errorMessage
+    };
   }
-};
+}
 </script>
 
 <style scoped>
@@ -187,5 +211,11 @@ body {
   background-color: #f0f0f0;
   color: #1e90ff;
   border-color: #1e90ff;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>

@@ -7,6 +7,7 @@
           <div class="account-info">
             <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
             <span>Mi Cuenta</span>
+            <button class="logout-button" @click="logout">Cerrar Sesión</button>
           </div>
         </header>
       </div>
@@ -15,15 +16,15 @@
           <h3>Criterios y Parámetros Eléctricos de Inversor</h3>
           <div class="input-group">
             <label for="voltage">Voltaje (V)</label>
-            <input type="text" id="voltage" placeholder="V" />
+            <input type="text" id="voltage" v-model="voltage" readonly />
           </div>
           <div class="input-group">
             <label for="current">Corriente (mA)</label>
-            <input type="text" id="current" placeholder="A" />
+            <input type="text" id="current" v-model="current" readonly />
           </div>
           <div class="input-group">
             <label for="power">Potencia (W)</label>
-            <input type="text" id="power" placeholder="W" />
+            <input type="text" id="power" v-model="power" readonly />
           </div>
           <button class="history-button">Ver Histórico de Datos</button>
           <a href="#" class="more-info-link">Más información del Sistema</a>
@@ -40,19 +41,19 @@
           <h3>Control de Inclinación de Paneles</h3>
           <div class="control-group">
             <div class="control-item">
-              <button class="control-button">+</button>
-              <input type="text" placeholder="Ángulo panel 1" />
-              <button class="control-button">-</button>
+              <button class="control-button" @click="adjustAngle(1, '+')">+</button>
+              <input type="text" v-model="angles[0]" @change="updateAngle(1)" placeholder="Ángulo panel 1" />
+              <button class="control-button" @click="adjustAngle(1, '-')">-</button>
             </div>
             <div class="control-item">
-              <button class="control-button">+</button>
-              <input type="text" placeholder="Ángulo panel 2" />
-              <button class="control-button">-</button>
+              <button class="control-button" @click="adjustAngle(2, '+')">+</button>
+              <input type="text" v-model="angles[1]" @change="updateAngle(2)" placeholder="Ángulo panel 2" />
+              <button class="control-button" @click="adjustAngle(2, '-')">-</button>
             </div>
             <div class="control-item">
-              <button class="control-button">+</button>
-              <input type="text" placeholder="Ángulo panel 3" />
-              <button class="control-button">-</button>
+              <button class="control-button" @click="adjustAngle(3, '+')">+</button>
+              <input type="text" v-model="angles[2]" @change="updateAngle(3)" placeholder="Ángulo panel 3" />
+              <button class="control-button" @click="adjustAngle(3, '-')">-</button>
             </div>
           </div>
         </div>
@@ -62,10 +63,76 @@
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
+import { signOut } from "firebase/auth";
+import { auth } from '../main';
+import { getDatabase, ref as dbRef, onValue, set } from "firebase/database";
+
 export default {
   name: "PanelPage",
-};
+  setup() {
+    const voltage = ref('');
+    const current = ref('');
+    const power = ref('');
+    const angles = ref([0, 0, 0]);
+
+    const db = getDatabase();
+
+    onMounted(() => {
+      // Leer valores de voltaje, corriente y potencia
+      onValue(dbRef(db, 'voltaje'), (snapshot) => {  // Ajuste en la clave para voltaje
+        voltage.value = snapshot.val();
+      });
+
+      onValue(dbRef(db, 'corriente'), (snapshot) => {  // Ajuste en la clave para corriente
+        current.value = snapshot.val();
+      });
+
+      onValue(dbRef(db, 'potencia'), (snapshot) => {
+        power.value = snapshot.val();
+      });
+
+      // Leer valores de ángulos
+      onValue(dbRef(db, 'angulo'), (snapshot) => {
+        angles.value[0] = snapshot.val();
+      });
+    });
+
+    const updateAngle = (panel) => {
+      set(dbRef(db, `angulo`), angles.value[panel - 1]);
+    };
+
+    const adjustAngle = (panel, operation) => {
+      if (operation === '+') {
+        angles.value[panel - 1]++;
+      } else if (operation === '-') {
+        angles.value[panel - 1]--;
+      }
+      updateAngle(panel);
+    };
+
+    const logout = async () => {
+      try {
+        await signOut(auth);
+        this.$router.push('/');
+      } catch (error) {
+        console.error("Error al cerrar sesión: ", error);
+      }
+    };
+
+    return {
+      voltage,
+      current,
+      power,
+      angles,
+      adjustAngle,
+      updateAngle,
+      logout,
+    };
+  }
+}
 </script>
+
 
 <style scoped>
 html,
@@ -133,6 +200,16 @@ body {
 .user-icon {
   height: 30px;
   margin-right: 20px;
+}
+
+.logout-button {
+  margin-left: 20px;
+  padding: 5px 10px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .content {

@@ -31,7 +31,7 @@
           </div>
           <button type="submit" class="login-button">Iniciar Sesión</button>
         </form>
-
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <div class="login-links">
           <a href="#" class="link">Recuperar contraseña</a>
           <a href="#" class="link" @click.prevent="goToRegister"
@@ -44,21 +44,27 @@
 </template>
 
 <script>
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../main';
+
 export default {
   name: "LoginPage",
   data() {
     return {
       username: "",
       password: "",
+      errorMessage: "",
     };
   },
   methods: {
-    handleLogin() {
-      // Aquí puedes agregar la lógica de autenticación
-      console.log("Usuario:", this.username);
-      console.log("Contraseña:", this.password);
-      //redirigir a la pagina principal
-      this.$router.push("/panel");
+    async handleLogin() {
+      try {
+        await signInWithEmailAndPassword(auth, this.username, this.password);
+        this.$router.push("/panel");
+      } catch (error) {
+        this.errorMessage = "Usuario o contraseña incorrectos.";
+        console.error("Error de autenticación:", error);
+      }
     },
     goToRegister() {
       this.$router.push("/register");
@@ -202,5 +208,11 @@ body {
 
 .login-links .link:hover {
   color: #4d4c4c;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>
