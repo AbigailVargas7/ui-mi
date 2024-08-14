@@ -8,7 +8,7 @@ import { getAuth } from "firebase/auth";
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyB6VanikYEfyqyCQVL4BxnzaXPbqALy_cw",
+    apiKey: "ingrese su api key",
     authDomain: "teleoperacionsolar.firebaseapp.com",
     databaseURL: "https://teleoperacionsolar-default-rtdb.firebaseio.com",
     projectId: "teleoperacionsolar",
