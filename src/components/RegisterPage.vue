@@ -1,9 +1,15 @@
 <template>
+  <!-- Contenedor principal para el fondo de la página de registro -->
   <div class="background-container">
+    <!-- Contenedor principal del formulario de registro -->
     <div class="register-container">
+      <!-- Botón para regresar a la página de login -->
       <button @click="goBack" class="back-button"></button>
+      
+      <!-- Formulario de registro -->
       <form class="register-form" @submit.prevent="handleRegister">
         <div class="form-container">
+          <!-- Grupo de campos para ingresar el nombre de usuario -->
           <div class="form-group">
             <label for="username">Ingrese su Usuario</label>
             <input 
@@ -14,6 +20,8 @@
               required 
             />
           </div>
+
+          <!-- Grupo de campos para ingresar el correo electrónico -->
           <div class="form-group">
             <label for="email">Ingrese su correo</label>
             <input
@@ -24,6 +32,8 @@
               required
             />
           </div>
+
+          <!-- Grupo de campos para ingresar la nueva contraseña -->
           <div class="form-group">
             <label for="password">Nueva contraseña</label>
             <input
@@ -35,6 +45,8 @@
               required
             />
           </div>
+
+          <!-- Grupo de campos para confirmar la nueva contraseña -->
           <div class="form-group">
             <label for="confirm-password">Comprobar nueva contraseña</label>
             <input
@@ -45,7 +57,11 @@
               required
             />
           </div>
+
+          <!-- Botón para guardar el registro -->
           <button type="submit" class="register-button"> Guardar Registro </button>
+
+          <!-- Mensaje de error en caso de que ocurra un problema durante el registro -->
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
       </form>
@@ -53,39 +69,50 @@
   </div>
 </template>
 
+
+
 <script>
+// Importamos las funciones y hooks necesarios de Vue y Firebase
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../main';
+import { createUserWithEmailAndPassword } from "firebase/auth"; // Importamos la función para registrar usuarios en Firebase
+import { auth } from '../main'; // Importamos la instancia de autenticación desde main.js
 
 export default {
   setup() {
-    const username = ref('');
-    const email = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
-    const errorMessage = ref('');
-    const router = useRouter();
+    // Definimos variables reactivas para manejar los datos del formulario
+    const username = ref(''); // Nombre de usuario
+    const email = ref(''); // Correo electrónico
+    const password = ref(''); // Contraseña
+    const confirmPassword = ref(''); // Confirmación de la contraseña
+    const errorMessage = ref(''); // Mensaje de error si ocurre algún problema durante el registro
+    const router = useRouter(); // Hook de Vue Router para la navegación
 
+    // Función para manejar el proceso de registro
     const handleRegister = async () => {
+      // Validación para comprobar si las contraseñas coinciden
       if (password.value !== confirmPassword.value) {
         errorMessage.value = "Las contraseñas no coinciden.";
         return;
       }
 
       try {
+        // Intento de crear un usuario en Firebase Authentication con correo y contraseña
         await createUserWithEmailAndPassword(auth, email.value, password.value);
+        // Si el registro es exitoso, redirigir al usuario al panel de control
         router.push('/panel');
       } catch (error) {
+        // Si ocurre un error durante el registro, mostrar el mensaje de error
         errorMessage.value = "Error de registro: " + error.message;
       }
     };
 
+    // Función para regresar a la página de login
     const goBack = () => {
-      router.push('/'); // Redirige a la página de login
+      router.push('/'); // Redirige al usuario a la página de inicio de sesión
     };
 
+    // Retornamos las variables y funciones para que puedan ser usadas en el template
     return {
       username,
       email,
@@ -99,7 +126,11 @@ export default {
 }
 </script>
 
+
+
+
 <style scoped>
+/* Estilos básicos para html y body */
 html,
 body {
   margin: 0;
@@ -107,6 +138,8 @@ body {
   height: 100%;
   width: 100%;
 }
+
+/* Contenedor de fondo */
 .background-container {
   position: absolute;
   top: 0;
@@ -124,6 +157,7 @@ body {
   z-index: -1;
 }
 
+/* Contenedor principal del formulario de registro */
 .register-container {
   display: flex;
   justify-content: center;
@@ -132,10 +166,14 @@ body {
   width: 100vw;
   position: inherit;
 }
+
+/* Contenedor del formulario */
 .form-container{
   padding: 5px;
   margin-top: 10px;
 }
+
+/* Estilo del formulario de registro */
 .register-form {
   background-color: white;
   padding: 40px;
@@ -145,11 +183,13 @@ body {
   max-width: 400px;
 }
 
+/* Estilo de los grupos de campos de formulario */
 .form-group {
   margin-bottom: 10px;
   margin-top: 25px;
 }
 
+/* Estilo de las etiquetas de los campos */
 .form-group label {
   display: block;
   margin-bottom: 5px;
@@ -161,6 +201,7 @@ body {
   color: #333;
 }
 
+/* Estilo de los campos de entrada */
 .form-group input {
   width: 250px;
   padding: 2px;
@@ -168,6 +209,8 @@ body {
   border-radius: 5px;
   font-size: 14px;
 }
+
+/* Estilo del botón para regresar a la página de login */
 .back-button{
   position: absolute;
   top: 20px; 
@@ -193,6 +236,8 @@ body {
 .back-button:hover {
   background-color: #f0f0f0;
 }
+
+/* Estilo del botón para guardar el registro */
 .register-button {
   padding: 0px;
   background-color: white;
@@ -207,12 +252,14 @@ body {
   margin-top: 10px;
 }
 
+/* Estilo del botón al pasar el ratón por encima */
 .register-button:hover {
   background-color: #f0f0f0;
   color: #1e90ff;
   border-color: #1e90ff;
 }
 
+/* Estilo del mensaje de error */
 .error-message {
   color: red;
   font-weight: bold;
