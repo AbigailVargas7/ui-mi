@@ -1,15 +1,9 @@
 <template>
-  <!-- Contenedor principal para el fondo de la página de registro -->
   <div class="background-container">
-    <!-- Contenedor principal del formulario de registro -->
     <div class="register-container">
-      <!-- Botón para regresar a la página de login -->
       <button @click="goBack" class="back-button"></button>
-      
-      <!-- Formulario de registro -->
       <form class="register-form" @submit.prevent="handleRegister">
         <div class="form-container">
-          <!-- Grupo de campos para ingresar el nombre de usuario -->
           <div class="form-group">
             <label for="username">Ingrese su Usuario</label>
             <input 
@@ -20,8 +14,6 @@
               required 
             />
           </div>
-
-          <!-- Grupo de campos para ingresar el correo electrónico -->
           <div class="form-group">
             <label for="email">Ingrese su correo</label>
             <input
@@ -32,8 +24,6 @@
               required
             />
           </div>
-
-          <!-- Grupo de campos para ingresar la nueva contraseña -->
           <div class="form-group">
             <label for="password">Nueva contraseña</label>
             <input
@@ -45,8 +35,6 @@
               required
             />
           </div>
-
-          <!-- Grupo de campos para confirmar la nueva contraseña -->
           <div class="form-group">
             <label for="confirm-password">Comprobar nueva contraseña</label>
             <input
@@ -57,11 +45,12 @@
               required
             />
           </div>
-
-          <!-- Botón para guardar el registro -->
-          <button type="submit" class="register-button"> Guardar Registro </button>
-
-          <!-- Mensaje de error en caso de que ocurra un problema durante el registro -->
+          <button 
+            type="submit" 
+            class="register-button" 
+            :disabled="loading || !isFormValid">
+            {{ loading ? 'Registrando...' : 'Guardar Registro' }}
+          </button>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
       </form>
@@ -69,64 +58,67 @@
   </div>
 </template>
 
-
-
 <script>
-// Importamos las funciones y hooks necesarios de Vue y Firebase
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"; // Importamos las funciones necesarias
-import { auth } from '../main'; // Importamos la instancia de autenticación desde main.js
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { auth } from '../firebase';
 
 export default {
   setup() {
-    // Definimos variables reactivas para manejar los datos del formulario
-    const username = ref(''); // Nombre de usuario
-    const email = ref(''); // Correo electrónico
-    const password = ref(''); // Contraseña
-    const confirmPassword = ref(''); // Confirmación de la contraseña
-    const errorMessage = ref(''); // Mensaje de error si ocurre algún problema durante el registro
-    const router = useRouter(); // Hook de Vue Router para la navegación
+    const username = ref('');
+    const email = ref('');
+    const password = ref('');
+    const confirmPassword = ref('');
+    const errorMessage = ref('');
+    const loading = ref(false);
+    const router = useRouter();
 
-    // Función para manejar el proceso de registro
+    // Lista de dominios permitidos
+    const allowedDomains = ['espol.edu.ec', 'otrodominio.com']; // Añade los dominios permitidos aquí
+
+    const isFormValid = computed(() => {
+      return email.value && password.value && confirmPassword.value && password.value === confirmPassword.value;
+    });
+
+    const validateEmailDomain = (email) => {
+      const domain = email.split('@')[1];
+      return allowedDomains.includes(domain);
+    };
+
     const handleRegister = async () => {
-      // Validación para comprobar si las contraseñas coinciden
+      if (!validateEmailDomain(email.value)) {
+        errorMessage.value = "El dominio de su correo no está permitido.";
+        return;
+      }
+
       if (password.value !== confirmPassword.value) {
         errorMessage.value = "Las contraseñas no coinciden.";
         return;
       }
 
-      // Verificación del dominio de correo permitido
-      const allowedDomains = ['espol.edu.ec'];
-      const emailDomain = email.value.split('@')[1];
-      if (!allowedDomains.includes(emailDomain)) {
-        errorMessage.value = "El dominio de su correo no está permitido.";
-        return;
-      }
-
       try {
-        // Intento de crear un usuario en Firebase Authentication con correo y contraseña
+        loading.value = true;
         const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
 
-        // Enviar correo de verificación
         await sendEmailVerification(user);
 
-        // Mostrar un mensaje de éxito y redirigir a la página de login
-        alert('Correo de verificación enviado. Por favor, revise su bandeja de entrada.');
-        router.push('/'); // Redirigir a la página de login
+        router.push({
+          path: '/',
+          query: { message: 'verify-email' }
+        });
       } catch (error) {
-        // Si ocurre un error durante el registro, mostrar el mensaje de error
         errorMessage.value = "Error de registro: " + error.message;
+      } finally {
+        loading.value = false;
       }
     };
 
-    // Función para regresar a la página de login
     const goBack = () => {
-      router.push('/'); // Redirige al usuario a la página de inicio de sesión
+      router.push('/');
     };
 
-    // Retornamos las variables y funciones para que puedan ser usadas en el template
     return {
       username,
       email,
@@ -134,18 +126,17 @@ export default {
       confirmPassword,
       handleRegister,
       goBack,
-      errorMessage
+      errorMessage,
+      loading,
+      isFormValid
     };
   }
 }
 </script>
 
-
-
 <style scoped>
 /* Estilos básicos para html y body */
-html,
-body {
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -180,8 +171,7 @@ body {
   position: inherit;
 }
 
-/* Contenedor del formulario */
-.form-container{
+.form-container {
   padding: 5px;
   margin-top: 10px;
 }
@@ -196,13 +186,13 @@ body {
   max-width: 400px;
 }
 
-/* Estilo de los grupos de campos de formulario */
+/* Grupo de campos de formulario */
 .form-group {
   margin-bottom: 10px;
   margin-top: 25px;
 }
 
-/* Estilo de las etiquetas de los campos */
+/* Estilo de las etiquetas */
 .form-group label {
   display: block;
   margin-bottom: 5px;
@@ -223,25 +213,26 @@ body {
   font-size: 14px;
 }
 
-/* Estilo del botón para regresar a la página de login */
-.back-button{
+/* Botón para regresar a la página de login */
+.back-button {
   position: absolute;
   top: 20px; 
   left: 20px; 
   width: 40px;
   height: 40px;
-  background-color: white; /* Fondo blanco del botón */
-  border: 2px solid #1e90ff; /* Borde de color azul */
-  border-radius: 50%; /* Hace que el botón sea redondo */
+  background-color: white;
+  border: 2px solid #1e90ff;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease; /* Suaviza la transición del fondo */
+  transition: background-color 0.3s ease;
 }
+
 .back-button::before {
-  content: '←'; /* Flecha de retroceso */
-  color: #1e90ff; /* Color de la flecha */
+  content: '←';
+  color: #1e90ff;
   font-size: 25px;
   font-weight: bold;
 }
@@ -250,7 +241,7 @@ body {
   background-color: #f0f0f0;
 }
 
-/* Estilo del botón para guardar el registro */
+/* Estilo del botón de registro */
 .register-button {
   padding: 0px;
   background-color: white;
@@ -265,11 +256,17 @@ body {
   margin-top: 10px;
 }
 
-/* Estilo del botón al pasar el ratón por encima */
 .register-button:hover {
   background-color: #f0f0f0;
   color: #1e90ff;
   border-color: #1e90ff;
+}
+
+.register-button:disabled {
+  background-color: #e0e0e0;
+  color: #b0b0b0;
+  border-color: #b0b0b0;
+  cursor: not-allowed;
 }
 
 /* Estilo del mensaje de error */

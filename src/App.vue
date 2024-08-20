@@ -1,30 +1,54 @@
 <template>
-  <!-- El componente router-view actúa como un contenedor dinámico que muestra el componente correspondiente a la ruta actual -->
   <router-view></router-view>
 </template>
 
 <script>
-// Importamos la función onAuthStateChanged de Firebase para monitorear el estado de autenticación del usuario
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from './main'; // Importamos la instancia de autenticación configurada en main.js
+import { ref, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { auth } from './firebase';
 
 export default {
-  // El hook 'created' se ejecuta cuando la instancia del componente se crea, antes de que el DOM se monte
-  created() {
-    // Monitorea el estado de autenticación del usuario
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // Si el usuario está autenticado y se encuentra en la página de inicio de sesión, redirigirlo al panel
-        if (this.$route.path === '/') {
-          this.$router.push('/panel');
+  setup() {
+    const user = ref(null);
+    const emailVerified = ref(false);
+    const router = useRouter();
+    const route = useRoute();
+
+    const redirectBasedOnAuth = () => {
+      if (user.value) {
+        if (emailVerified.value) {
+          if (route.path === '/' || route.path === '/register') {
+            router.push('/panel');
+          }
+        } else {
+          if (route.path === '/panel' || route.path === '/tabla') {
+            router.push({ path: '/', query: { message: 'verify-email' } });
+          }
         }
       } else {
-        // Si el usuario no está autenticado y está intentando acceder a una ruta distinta de la página de inicio de sesión, redirigirlo a la página de inicio de sesión
-        if (this.$route.path !== '/') {
-          this.$router.push('/');
+        if (route.path === '/panel' || route.path === '/tabla') {
+          router.push('/');
         }
       }
+    };
+
+    onMounted(() => {
+      onAuthStateChanged(auth, (currentUser) => {
+        user.value = currentUser;
+        emailVerified.value = currentUser?.emailVerified || false;
+        redirectBasedOnAuth();
+      });
     });
+
+    watch(() => route.path, () => {
+      redirectBasedOnAuth();
+    });
+
+    return {
+      user,
+      emailVerified
+    };
   }
 }
 </script>

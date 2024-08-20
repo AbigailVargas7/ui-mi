@@ -1,31 +1,23 @@
 <template>
-  <!-- Contenedor principal para todo el componente -->
   <div class="back-container">
-    <!-- Contenedor del login que engloba la imagen y el formulario -->
     <div class="login-container">
-      <!-- Sección para mostrar una imagen decorativa -->
       <div class="login-image">
         <img src="@/assets/solar-panel.jpg" alt="Solar Panel" />
       </div>
-      <!-- Sección del formulario de login -->
       <div class="login-form">
-        <!-- Logo de la empresa o aplicación -->
         <img src="@/assets/cyted-logo.png" alt="CYTED Logo" class="logo" />
-        <!-- Formulario para el inicio de sesión -->
         <form @submit.prevent="handleLogin" class="form">
           <div class="form-structure">
-            <!-- Campo para ingresar el nombre de usuario o correo -->
             <div class="form-group">
-              <label for="username">Usuario</label>
+              <label for="email">Correo Electrónico</label>
               <input
-                type="text"
-                id="username"
+                type="email"
+                id="email"
                 placeholder="Ingrese su correo"
-                v-model="username"
+                v-model="email"
                 required
               />
             </div>
-            <!-- Campo para ingresar la contraseña -->
             <div class="form-group">
               <label for="password">Contraseña</label>
               <input
@@ -37,12 +29,10 @@
               />
             </div>
           </div>
-          <!-- Botón para enviar el formulario de inicio de sesión -->
           <button type="submit" class="login-button">Iniciar Sesión</button>
         </form>
-        <!-- Mensaje de error en caso de que el login falle -->
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        <!-- Enlaces para recuperar contraseña o registrarse -->
+        <p v-if="infoMessage" class="info-message">{{ infoMessage }}</p>
         <div class="login-links">
           <a href="#" class="link">Recuperar contraseña</a>
           <a href="#" class="link" @click.prevent="goToRegister">Realizar nuevo registro</a>
@@ -52,52 +42,58 @@
   </div>
 </template>
 
-
 <script>
-// Importamos el método para autenticación con Firebase y el objeto auth previamente configurado
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../main'; // Obtenemos la instancia de autenticación desde el archivo main.js
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { auth } from '../firebase';
 
 export default {
-  name: "LoginPage", // Nombre del componente para identificación
-  data() {
-    return {
-      // Variables reactivas para almacenar los datos del usuario y el mensaje de error
-      username: "", // Correo electrónico del usuario
-      password: "", // Contraseña del usuario
-      errorMessage: "", // Mensaje de error en caso de fallo de autenticación
-    };
-  },
-  methods: {
-    // Método asincrónico para manejar el login del usuario
-    async handleLogin() {
+  setup() {
+    const email = ref('');
+    const password = ref('');
+    const errorMessage = ref('');
+    const infoMessage = ref('');
+    const router = useRouter();
+    const route = useRoute();
+
+    const handleLogin = async () => {
       try {
-        // Intento de inicio de sesión usando el correo y la contraseña con Firebase
-        const userCredential = await signInWithEmailAndPassword(auth, this.username, this.password);
+        const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
 
-        // Verificar si el correo del usuario ha sido verificado
         if (user.emailVerified) {
-          this.$router.push("/panel"); // Redirigir al panel si el usuario está verificado
+          router.push('/panel'); // Redirigir al panel si el usuario está verificado
         } else {
-          this.errorMessage = "Por favor, verifica tu correo electrónico antes de iniciar sesión.";
+          errorMessage.value = "Por favor, verifica tu correo electrónico antes de iniciar sesión.";
           await auth.signOut(); // Cerrar sesión si no está verificado
         }
       } catch (error) {
-        // Mostrar un mensaje de error si ocurre algún problema durante la autenticación
-        this.errorMessage = "Usuario o contraseña incorrectos.";
-        console.error("Error de autenticación:", error);
+        errorMessage.value = "Usuario o contraseña incorrectos.";
       }
-    },
-    // Método para redirigir al usuario a la página de registro
-    goToRegister() {
-      this.$router.push("/register");
-    },
-  },
-};
-</script>
- 
+    };
 
+    const goToRegister = () => {
+      router.push('/register');
+    };
+
+    onMounted(() => {
+      if (route.query.message === 'verify-email') {
+        infoMessage.value = 'Registro exitoso. Por favor, revisa tu correo electrónico para verificar tu cuenta.';
+      }
+    });
+
+    return {
+      email,
+      password,
+      handleLogin,
+      goToRegister,
+      errorMessage,
+      infoMessage
+    };
+  }
+}
+</script>
 
 <style scoped>
 /* Estilos básicos para html y body */
@@ -141,8 +137,8 @@ body {
     rgba(111, 95, 255, 0.75) 41%,
     rgba(249, 249, 255, 0.75) 76%
   );
-  width: 50%; /* Ocupa la mitad izquierda de la pantalla */
-  height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+  width: 50%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -216,12 +212,12 @@ body {
   background-color: white;
   color: #23a6f0;
   border: 2px solid #23a6f0;
-  border-radius: 40px; /* Bordes redondeados */
+  border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 14px; /* Tamaño de la fuente ajustado */
-  width: 156px; /* Ancho ajustado */
-  height: 35px; /* Altura ajustada */
+  font-size: 14px;
+  width: 156px;
+  height: 35px;
   margin: 0 auto;
 }
 
@@ -258,6 +254,12 @@ body {
 /* Estilo para el mensaje de error */
 .error-message {
   color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
+/* Estilo para el mensaje informativo */
+.info-message {
+  color: green;
   font-weight: bold;
   margin-top: 10px;
 }
