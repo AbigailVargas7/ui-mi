@@ -75,7 +75,7 @@
 // Importamos las funciones y hooks necesarios de Vue y Firebase
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { createUserWithEmailAndPassword } from "firebase/auth"; // Importamos la función para registrar usuarios en Firebase
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth"; // Importamos las funciones necesarias
 import { auth } from '../main'; // Importamos la instancia de autenticación desde main.js
 
 export default {
@@ -96,11 +96,25 @@ export default {
         return;
       }
 
+      // Verificación del dominio de correo permitido
+      const allowedDomains = ['espol.edu.ec'];
+      const emailDomain = email.value.split('@')[1];
+      if (!allowedDomains.includes(emailDomain)) {
+        errorMessage.value = "El dominio de su correo no está permitido.";
+        return;
+      }
+
       try {
         // Intento de crear un usuario en Firebase Authentication con correo y contraseña
-        await createUserWithEmailAndPassword(auth, email.value, password.value);
-        // Si el registro es exitoso, redirigir al usuario al panel de control
-        router.push('/panel');
+        const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+        const user = userCredential.user;
+
+        // Enviar correo de verificación
+        await sendEmailVerification(user);
+
+        // Mostrar un mensaje de éxito y redirigir a la página de login
+        alert('Correo de verificación enviado. Por favor, revise su bandeja de entrada.');
+        router.push('/'); // Redirigir a la página de login
       } catch (error) {
         // Si ocurre un error durante el registro, mostrar el mensaje de error
         errorMessage.value = "Error de registro: " + error.message;
@@ -125,7 +139,6 @@ export default {
   }
 }
 </script>
-
 
 
 

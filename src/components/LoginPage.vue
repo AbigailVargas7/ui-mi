@@ -73,9 +73,16 @@ export default {
     async handleLogin() {
       try {
         // Intento de inicio de sesión usando el correo y la contraseña con Firebase
-        await signInWithEmailAndPassword(auth, this.username, this.password);
-        // Redirigir al usuario al panel de control si el login es exitoso
-        this.$router.push("/panel");
+        const userCredential = await signInWithEmailAndPassword(auth, this.username, this.password);
+        const user = userCredential.user;
+
+        // Verificar si el correo del usuario ha sido verificado
+        if (user.emailVerified) {
+          this.$router.push("/panel"); // Redirigir al panel si el usuario está verificado
+        } else {
+          this.errorMessage = "Por favor, verifica tu correo electrónico antes de iniciar sesión.";
+          await auth.signOut(); // Cerrar sesión si no está verificado
+        }
       } catch (error) {
         // Mostrar un mensaje de error si ocurre algún problema durante la autenticación
         this.errorMessage = "Usuario o contraseña incorrectos.";
@@ -89,6 +96,7 @@ export default {
   },
 };
 </script>
+ 
 
 
 <style scoped>
