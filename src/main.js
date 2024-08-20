@@ -9,13 +9,13 @@ import { getAuth } from "firebase/auth";
 
 // Configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyB6VanikYEfyqyCQVL4BxnzaXPbqALy_cw",
-  authDomain: "teleoperacionsolar.firebaseapp.com",
-  databaseURL: "https://teleoperacionsolar-default-rtdb.firebaseio.com",
-  projectId: "teleoperacionsolar",
-  storageBucket: "teleoperacionsolar.appspot.com",
-  messagingSenderId: "835449639422",
-  appId: "1:835449639422:web:748e058a35dc0c9ebd30af"
+  apiKey: "tu-api-key",
+  authDomain: "tu-auth-domain",
+  databaseURL: "tu-database-url",
+  projectId: "tu-project-id",
+  storageBucket: "tu-storage-bucket",
+  messagingSenderId: "tu-messaging-sender-id",
+  appId: "tu-app-id"
 };
 
 
