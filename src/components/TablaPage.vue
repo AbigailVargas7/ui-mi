@@ -39,13 +39,12 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
-import { onValue, ref as dbRef } from "firebase/database";
-import { auth } from '../firebase';
-import { db } from '../firebase';
 import LineChart from '@/components/LineChart.vue';
 import { signOut } from "firebase/auth";
+import { auth } from '../firebase';
+import { getDatabase, ref as dbRef, onValue } from "firebase/database";
 
 export default {
   name: "TablaPage",
@@ -70,50 +69,37 @@ export default {
 
     const maxDataPoints = 10;
 
-    const updateChartData = (chartData, newData) => {
+    const updateChartData = (chartData, label, newData) => {
       if (chartData.value.datasets[0].data.length >= maxDataPoints) {
         chartData.value.datasets[0].data.shift();
         chartData.value.labels.shift();
       }
       chartData.value.datasets[0].data.push(newData);
-      chartData.value.labels.push(new Date().toLocaleTimeString());
+      chartData.value.labels.push(label);
     };
 
-    const cargarDatosFirebase = () => {
-      const voltajeRef = dbRef(db, 'voltaje');
-      const corrienteRef = dbRef(db, 'corriente');
-      const potenciaRef = dbRef(db, 'potencia');
-
-      onValue(voltajeRef, (snapshot) => {
+    const fetchRegistros = () => {
+      const db = getDatabase();
+      const registrosRef = dbRef(db, 'historicos/');
+      onValue(registrosRef, (snapshot) => {
         if (snapshot.exists()) {
-          updateChartData(voltajeData, snapshot.val());
-        }
-      });
+          const data = snapshot.val();
+          registros.value = Object.values(data);
 
-      onValue(corrienteRef, (snapshot) => {
-        if (snapshot.exists()) {
-          updateChartData(corrienteData, snapshot.val());
+          // Actualizar gráficos
+          registros.value.forEach(registro => {
+            updateChartData(corrienteData, registro.hora, registro.corriente);
+            updateChartData(voltajeData, registro.hora, registro.voltaje);
+            updateChartData(potenciaData, registro.hora, registro.potencia);
+          });
         }
+      }, (error) => {
+        console.error("Error fetching data: ", error);
       });
-
-      onValue(potenciaRef, (snapshot) => {
-        if (snapshot.exists()) {
-          updateChartData(potenciaData, snapshot.val());
-        }
-      });
-    };
-
-    const handleGuardarRegistro = (event) => {
-      registros.value.push(event.detail);
     };
 
     onMounted(() => {
-      window.addEventListener('guardarRegistro', handleGuardarRegistro);
-      cargarDatosFirebase();
-    });
-
-    onUnmounted(() => {
-      window.removeEventListener('guardarRegistro', handleGuardarRegistro);
+      fetchRegistros();
     });
 
     const imprimirPagina = () => {

@@ -63,7 +63,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'; 
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
-import { getDatabase, ref as dbRef, onValue, set } from "firebase/database";
+import { getDatabase, ref as dbRef, onValue, set, push } from "firebase/database";
 
 export default {
   name: "PanelPage",
@@ -144,12 +144,19 @@ export default {
         fecha: fecha.toLocaleDateString(),
         hora: fecha.toLocaleTimeString(),
       };
-      window.dispatchEvent(new CustomEvent('guardarRegistro', { detail: nuevoRegistro }));
-      successMessage.value = "Valores guardados exitosamente.";
 
-      setTimeout(() => {
-        successMessage.value = null;
-      }, 3000);
+      // Guardar en Firebase
+      const newRegistroRef = push(dbRef(db, 'historicos'));
+      set(newRegistroRef, nuevoRegistro)
+        .then(() => {
+          successMessage.value = "Valores guardados exitosamente.";
+          setTimeout(() => {
+            successMessage.value = null;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error("Error al guardar valores:", error);
+        });
     };
 
     const logout = async () => {
