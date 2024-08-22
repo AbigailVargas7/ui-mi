@@ -63,7 +63,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'; 
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
-import { getDatabase, ref as dbRef, onValue, set, push } from "firebase/database";
+import { getDatabase, ref as dbRef, onValue, set, push, remove } from "firebase/database";
 
 export default {
   name: "PanelPage",
@@ -161,6 +161,8 @@ export default {
 
     const logout = async () => {
       try {
+        const db = getDatabase();
+        await remove(dbRef(db, 'historicos')); // Eliminar todos los registros
         await signOut(auth);
         router.push('/');
       } catch (error) {
