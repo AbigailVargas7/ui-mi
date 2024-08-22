@@ -6,12 +6,11 @@
           <img src="@/assets/espol-logo.png" alt="Espol Logo" class="espol-logo" />
           <div class="account-info">
             <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
-            <span>Mi Cuenta</span>
-            <button class="logout-button" @click="logout">Cerrar Sesión</button>
+             <button class="logout-button" @click="logout">Cerrar Sesión</button>
           </div>
         </header>
       </div>
-      <button class="back-button" @click="goBack">← Ir a Inicio</button>
+      <button class="back-button" @click="goBack">← Inicio</button>
       <div class="content">
         <div class="left-section">
           <h3>Criterios y Parámetros Eléctricos de Inversor</h3>
@@ -27,33 +26,29 @@
             <label for="power">Potencia (W)</label>
             <input type="text" id="power" v-model="power" readonly />
           </div>
-          <button class="capture-button">Capturar Datos</button>
+          <button @click="guardarValores" class="save-button">Guardar Valores</button>
+          <button @click="goToTablePage" class="history-button">Ver Histórico de Datos</button>
+          <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
         </div>
-
         <div class="separator"></div>
-
         <div class="right-section">
           <h3>Vista de Cámara</h3>
           <div class="camera-view">
             <img src="@/assets/no-video.png" alt="No Video" />
           </div>
-          
           <h3>Control de Inclinación de Paneles</h3>
           <div class="control-group">
+            <!-- Primer control de ángulo conectado a Firebase -->
             <div class="control-item">
-              <button class="control-button" @click="adjustAngle(1, '+')">+</button>
-              <input type="text" v-model="angles[0]" @change="updateAngle(1)" placeholder="Ángulo panel 1" />
-              <button class="control-button" @click="adjustAngle(1, '-')">-</button>
+              <button class="control-button" @click="adjustAngleFromFirebase('+')">+</button>
+              <input type="number" v-model.number="angleFromFirebase" @change="updateAngleFromFirebase" placeholder="Ángulo panel 1" min="0" max="25" />
+              <button class="control-button" @click="adjustAngleFromFirebase('-')">-</button>
             </div>
-            <div class="control-item">
-              <button class="control-button" @click="adjustAngle(2, '+')">+</button>
-              <input type="text" v-model="angles[1]" @change="updateAngle(2)" placeholder="Ángulo panel 2" />
-              <button class="control-button" @click="adjustAngle(2, '-')">-</button>
-            </div>
-            <div class="control-item">
-              <button class="control-button" @click="adjustAngle(3, '+')">+</button>
-              <input type="text" v-model="angles[2]" @change="updateAngle(3)" placeholder="Ángulo panel 3" />
-              <button class="control-button" @click="adjustAngle(3, '-')">-</button>
+            <!-- Otros dos controles de ángulo independientes -->
+            <div class="control-item" v-for="(angle, index) in angles" :key="index">
+              <button class="control-button" @click="adjustAngle(index, '+')">+</button>
+              <input type="number" v-model.number="angles[index]" @change="updateAngle(index)" :placeholder="'Ángulo panel ' + (index + 2)" min="0" max="25" />
+              <button class="control-button" @click="adjustAngle(index, '-')">-</button>
             </div>
           </div>
         </div>
@@ -64,79 +59,141 @@
 
 <script>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; 
 import { signOut } from "firebase/auth";
-import { auth } from '../main';
-import { getDatabase, ref as dbRef, onValue, set } from "firebase/database";
+import { auth } from '../firebase';
+import { getDatabase, ref as dbRef, onValue, set, push } from "firebase/database";
 
 export default {
   name: "PanelPage",
   setup() {
+    const router = useRouter(); 
     const voltage = ref('');
     const current = ref('');
     const power = ref('');
-    const angles = ref([0, 0, 0]);
-
+    const angleFromFirebase = ref(0);
+    const angles = ref([0, 0]);
+    const isLoading = ref(true);
+    const successMessage = ref(null);
     const db = getDatabase();
 
-    onMounted(() => {
-      // Leer valores de voltaje, corriente y potencia
-      onValue(dbRef(db, 'voltaje'), (snapshot) => {  // Ajuste en la clave para voltaje
-        voltage.value = snapshot.val();
+    const fetchData = (path, targetRef) => {
+      const dataRef = dbRef(db, path);
+      onValue(dataRef, (snapshot) => {
+        if (snapshot.exists()) {
+          targetRef.value = snapshot.val();
+        }
+      }, (error) => {
+        console.error("Error fetching data: ", error);
       });
-
-      onValue(dbRef(db, 'corriente'), (snapshot) => {  // Ajuste en la clave para corriente
-        current.value = snapshot.val();
-      });
-
-      onValue(dbRef(db, 'potencia'), (snapshot) => {
-        power.value = snapshot.val();
-      });
-
-      // Leer valores de ángulos
-      onValue(dbRef(db, 'angulo'), (snapshot) => {
-        angles.value[0] = snapshot.val();
-      });
-    });
-
-    const updateAngle = (panel) => {
-      set(dbRef(db, `angulo`), angles.value[panel - 1]);
     };
 
-    const adjustAngle = (panel, operation) => {
-      if (operation === '+') {
-        angles.value[panel - 1]++;
-      } else if (operation === '-') {
-        angles.value[panel - 1]--;
+    onMounted(() => {
+      fetchData('voltaje', voltage);
+      fetchData('corriente', current);
+      fetchData('potencia', power);
+      fetchData('angulo', angleFromFirebase);
+      isLoading.value = false;
+    });
+
+    const updateAngleFromFirebase = () => {
+      if (angleFromFirebase.value < 0) {
+        angleFromFirebase.value = 0;
+      } else if (angleFromFirebase.value > 25) {
+        angleFromFirebase.value = 25;
       }
-      updateAngle(panel);
+
+      set(dbRef(db, 'angulo'), angleFromFirebase.value)
+        .then(() => console.log("Angle updated successfully"))
+        .catch((error) => console.error("Error updating angle: ", error));
+    };
+
+    const adjustAngleFromFirebase = (operation) => {
+      if (operation === '+') {
+        angleFromFirebase.value = Math.min(25, angleFromFirebase.value + 1);
+      } else if (operation === '-') {
+        angleFromFirebase.value = Math.max(0, angleFromFirebase.value - 1);
+      }
+      updateAngleFromFirebase();
+    };
+
+    const updateAngle = (panelIndex) => {
+      if (angles.value[panelIndex] < 0) {
+        angles.value[panelIndex] = 0;
+      } else if (angles.value[panelIndex] > 25) {
+        angles.value[panelIndex] = 25;
+      }
+    };
+
+    const adjustAngle = (panelIndex, operation) => {
+      if (operation === '+') {
+        angles.value[panelIndex] = Math.min(25, angles.value[panelIndex] + 1);
+      } else if (operation === '-') {
+        angles.value[panelIndex] = Math.max(0, angles.value[panelIndex] - 1);
+      }
+    };
+
+    const guardarValores = () => {
+      const fecha = new Date();
+      const nuevoRegistro = {
+        angulo: angleFromFirebase.value, 
+        voltaje: voltage.value,
+        corriente: current.value,
+        potencia: power.value,
+        fecha: fecha.toLocaleDateString(),
+        hora: fecha.toLocaleTimeString(),
+      };
+
+      // Guardar en Firebase
+      const newRegistroRef = push(dbRef(db, 'historicos'));
+      set(newRegistroRef, nuevoRegistro)
+        .then(() => {
+          successMessage.value = "Valores guardados exitosamente.";
+          setTimeout(() => {
+            successMessage.value = null;
+          }, 3000);
+        })
+        .catch((error) => {
+          console.error("Error al guardar valores:", error);
+        });
     };
 
     const logout = async () => {
       try {
         await signOut(auth);
-        this.$router.push('/');
+        router.push('/');
       } catch (error) {
         console.error("Error al cerrar sesión: ", error);
       }
+    };
+
+    const goToTablePage = () => {
+      router.push('/tabla');
     };
 
     return {
       voltage,
       current,
       power,
+      angleFromFirebase,
       angles,
+      isLoading,
+      successMessage,
+      adjustAngleFromFirebase,
+      updateAngleFromFirebase,
       adjustAngle,
       updateAngle,
+      guardarValores,
       logout,
+      goToTablePage,
     };
   }
-}
+};
 </script>
 
-
 <style scoped>
-html,
-body {
+/* Mantén los estilos que ya tenías */
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -165,15 +222,7 @@ body {
 .top-bar-background {
   width: 100%;
   height: 50px;
-  background: linear-gradient(
-    to right,
-    rgba(0, 210, 246, 0.4) 0%,
-    rgba(138, 174, 229, 0.4) 17%,
-    rgba(29, 162, 186, 0.4) 40%,
-    rgba(103, 218, 239, 0.4) 60%,
-    rgba(169, 242, 255, 0.4) 75%,
-    rgba(29, 162, 186, 0.4) 100%
-  );
+  background: linear-gradient(to right, rgba(0, 210, 246, 0.4) 0%, rgba(138, 174, 229, 0.4) 17%, rgba(29, 162, 186, 0.4) 40%, rgba(103, 218, 239, 0.4) 60%, rgba(169, 242, 255, 0.4) 75%, rgba(29, 162, 186, 0.4) 100%);
 }
 
 .top-bar {
@@ -188,7 +237,7 @@ body {
 
 .espol-logo {
   height: 40px;
-  margin-left : 30px;
+  margin-left: 30px;
 }
 
 .account-info {
@@ -199,28 +248,32 @@ body {
 
 .user-icon {
   height: 30px;
-  margin-right: 20px;
+  margin-right: 5px;
 }
 
 .logout-button {
-  margin-left: 20px;
-  padding: 5px 10px;
-  background-color: #fce3e3;
-  color: #23a6f0;
-  border: 2px solid #23a6f0;
-  border-radius: 40px; /* Bordes redondeados */
+  margin-left: 5px;
+    background-color: transparent; /* Fondo transparente */
+  color: #000000; /* Color del texto */
+  border: none; /* Sin bordes */
+  border-radius: 40px; /* Bordes redondeados (opcional si se necesita en el diseño) */
   cursor: pointer;
   font-weight: bold;
   font-size: 14px; /* Tamaño de la fuente ajustado */
   width: 118px; /* Ancho ajustado */
   height: 35px; /* Altura ajustada */
-  
+  transition: background-color 0.3s, color 0.3s; /* Efecto de transición para el hover */
 }
 
+/* Efecto hover opcional */
+.logout-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Ligera transparencia al pasar el ratón */
+  color: #000000; /* Asegura que el texto siga siendo visible */
+}
 .content {
   display: flex;
   flex: 1;
-  margin-top: 30px;
+  margin-top: 10px;
   margin-bottom: 30px;
   padding: 20px;
 }
@@ -234,7 +287,6 @@ body {
   color: #333;
   display: flex;
   flex-direction: column;
-  
 }
 
 .right-section {
@@ -288,27 +340,45 @@ h3 {
   background-color: white;
   color: #23a6f0;
   border: 2px solid #23a6f0;
-  border-radius: 40px; /* Bordes redondeados */
+  border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 14px; /* Tamaño de la fuente ajustado */
-  width: 208px; /* Ancho ajustado */
-  height: 35px; /* Altura ajustada */
+  font-size: 14px;
+  width: 208px;
+  height: 35px;
   margin: 30px auto;
 }
-.back-button {
+.back-button{
   padding: 0px;
-  background-color: rgb(255, 255, 255);
+  background-color: white;
   color: #23a6f0;
   border: 2px solid #23a6f0;
-  border-radius: 40px; /* Bordes redondeados */
+  border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 14px; /* Tamaño de la fuente ajustado */
-  width: 108px; /* Ancho ajustado */
-  height: 35px; /* Altura ajustada */
-  margin: 30px ;
+  font-size: 12px;
+  width: 60px;
+  height: 35px;
+  margin: 10px;
 }
+.save-button {
+  padding: 0px;
+  background-color: white;
+  color: #23a6f0;
+  border: 2px solid #23a6f0;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  width: 208px;
+  height: 35px;
+  margin: 30px auto;
+}
+
+.save-button:hover {
+  background-color: #218838;
+}
+
 .camera-view {
   display: flex;
   align-items: center;
@@ -356,6 +426,7 @@ h3 {
   width: 50%; 
   background-color: #ffffff;
 }
+
 .more-info-link {
   color: #8b8b8b;
   text-decoration: underline;
@@ -363,8 +434,16 @@ h3 {
   cursor: pointer;
   margin: 0 auto;
 }
+
 .more-info-link:hover {
   color: #000000;
   text-decoration: none; 
+}
+
+/* Estilo para el mensaje de éxito */
+.success-message {
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>

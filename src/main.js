@@ -1,27 +1,16 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import { db, auth } from './firebase';  // Importar Firebase
 
-// Firebase imports
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+const app = createApp(App);
 
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyB6VanikYEfyqyCQVL4BxnzaXPbqALy_cw",
-    authDomain: "teleoperacionsolar.firebaseapp.com",
-    databaseURL: "https://teleoperacionsolar-default-rtdb.firebaseio.com",
-    projectId: "teleoperacionsolar",
-    storageBucket: "teleoperacionsolar.appspot.com",
-    messagingSenderId: "835449639422",
-    appId: "1:835449639422:web:748e058a35dc0c9ebd30af"
-  };
+app.use(router);  // Vinculamos el router para manejar la navegación
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
+app.mount('#app');  // Montamos la aplicación en el elemento HTML con el ID 'app'
 
-export const auth = getAuth();
-
-createApp(App)
-  .use(router)
-  .mount('#app')
+// Opcional: log para verificar que Firebase está funcionando
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Firebase Database:', db);
+  console.log('Firebase Auth:', auth);
+}

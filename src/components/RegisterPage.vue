@@ -45,7 +45,12 @@
               required
             />
           </div>
-          <button type="submit" class="register-button"> Guardar Registro </button>
+          <button 
+            type="submit" 
+            class="register-button" 
+            :disabled="loading || !isFormValid">
+            {{ loading ? 'Registrando...' : 'Guardar Registro' }}
+          </button>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
       </form>
@@ -54,10 +59,10 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../main';
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { auth } from '../firebase';
 
 export default {
   setup() {
@@ -66,24 +71,52 @@ export default {
     const password = ref('');
     const confirmPassword = ref('');
     const errorMessage = ref('');
+    const loading = ref(false);
     const router = useRouter();
 
+    // Lista de dominios permitidos
+    const allowedDomains = ['espol.edu.ec', 'otrodominio.com']; // Añade los dominios permitidos aquí
+
+    const isFormValid = computed(() => {
+      return email.value && password.value && confirmPassword.value && password.value === confirmPassword.value;
+    });
+
+    const validateEmailDomain = (email) => {
+      const domain = email.split('@')[1];
+      return allowedDomains.includes(domain);
+    };
+
     const handleRegister = async () => {
+      if (!validateEmailDomain(email.value)) {
+        errorMessage.value = "El dominio de su correo no está permitido.";
+        return;
+      }
+
       if (password.value !== confirmPassword.value) {
         errorMessage.value = "Las contraseñas no coinciden.";
         return;
       }
 
       try {
-        await createUserWithEmailAndPassword(auth, email.value, password.value);
-        router.push('/panel');
+        loading.value = true;
+        const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+        const user = userCredential.user;
+
+        await sendEmailVerification(user);
+
+        router.push({
+          path: '/',
+          query: { message: 'verify-email' }
+        });
       } catch (error) {
         errorMessage.value = "Error de registro: " + error.message;
+      } finally {
+        loading.value = false;
       }
     };
 
     const goBack = () => {
-      router.push('/'); // Redirige a la página de login
+      router.push('/');
     };
 
     return {
@@ -93,20 +126,24 @@ export default {
       confirmPassword,
       handleRegister,
       goBack,
-      errorMessage
+      errorMessage,
+      loading,
+      isFormValid
     };
   }
 }
 </script>
 
 <style scoped>
-html,
-body {
+/* Estilos básicos para html y body */
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
 }
+
+/* Contenedor de fondo */
 .background-container {
   position: absolute;
   top: 0;
@@ -124,6 +161,7 @@ body {
   z-index: -1;
 }
 
+/* Contenedor principal del formulario de registro */
 .register-container {
   display: flex;
   justify-content: center;
@@ -132,10 +170,13 @@ body {
   width: 100vw;
   position: inherit;
 }
-.form-container{
+
+.form-container {
   padding: 5px;
   margin-top: 10px;
 }
+
+/* Estilo del formulario de registro */
 .register-form {
   background-color: white;
   padding: 40px;
@@ -145,11 +186,13 @@ body {
   max-width: 400px;
 }
 
+/* Grupo de campos de formulario */
 .form-group {
   margin-bottom: 10px;
   margin-top: 25px;
 }
 
+/* Estilo de las etiquetas */
 .form-group label {
   display: block;
   margin-bottom: 5px;
@@ -161,6 +204,7 @@ body {
   color: #333;
 }
 
+/* Estilo de los campos de entrada */
 .form-group input {
   width: 250px;
   padding: 2px;
@@ -168,24 +212,27 @@ body {
   border-radius: 5px;
   font-size: 14px;
 }
-.back-button{
+
+/* Botón para regresar a la página de login */
+.back-button {
   position: absolute;
   top: 20px; 
   left: 20px; 
   width: 40px;
   height: 40px;
-  background-color: white; /* Fondo blanco del botón */
-  border: 2px solid #1e90ff; /* Borde de color azul */
-  border-radius: 50%; /* Hace que el botón sea redondo */
+  background-color: white;
+  border: 2px solid #1e90ff;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease; /* Suaviza la transición del fondo */
+  transition: background-color 0.3s ease;
 }
+
 .back-button::before {
-  content: '←'; /* Flecha de retroceso */
-  color: #1e90ff; /* Color de la flecha */
+  content: '←';
+  color: #1e90ff;
   font-size: 25px;
   font-weight: bold;
 }
@@ -193,6 +240,8 @@ body {
 .back-button:hover {
   background-color: #f0f0f0;
 }
+
+/* Estilo del botón de registro */
 .register-button {
   padding: 0px;
   background-color: white;
@@ -213,6 +262,14 @@ body {
   border-color: #1e90ff;
 }
 
+.register-button:disabled {
+  background-color: #e0e0e0;
+  color: #b0b0b0;
+  border-color: #b0b0b0;
+  cursor: not-allowed;
+}
+
+/* Estilo del mensaje de error */
 .error-message {
   color: red;
   font-weight: bold;

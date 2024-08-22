@@ -9,12 +9,12 @@
         <form @submit.prevent="handleLogin" class="form">
           <div class="form-structure">
             <div class="form-group">
-              <label for="username">Usuario</label>
+              <label for="email">Correo Electrónico</label>
               <input
-                type="text"
-                id="username"
+                type="email"
+                id="email"
                 placeholder="Ingrese su correo"
-                v-model="username"
+                v-model="email"
                 required
               />
             </div>
@@ -32,11 +32,10 @@
           <button type="submit" class="login-button">Iniciar Sesión</button>
         </form>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <p v-if="infoMessage" class="info-message">{{ infoMessage }}</p>
         <div class="login-links">
           <a href="#" class="link">Recuperar contraseña</a>
-          <a href="#" class="link" @click.prevent="goToRegister"
-            >Realizar nuevo registro</a
-          >
+          <a href="#" class="link" @click.prevent="goToRegister">Realizar nuevo registro</a>
         </div>
       </div>
     </div>
@@ -45,35 +44,59 @@
 
 <script>
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../main';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { auth } from '../firebase';
 
 export default {
-  name: "LoginPage",
-  data() {
-    return {
-      username: "",
-      password: "",
-      errorMessage: "",
-    };
-  },
-  methods: {
-    async handleLogin() {
+  setup() {
+    const email = ref('');
+    const password = ref('');
+    const errorMessage = ref('');
+    const infoMessage = ref('');
+    const router = useRouter();
+    const route = useRoute();
+
+    const handleLogin = async () => {
       try {
-        await signInWithEmailAndPassword(auth, this.username, this.password);
-        this.$router.push("/panel");
+        const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
+        const user = userCredential.user;
+
+        if (user.emailVerified) {
+          router.push('/panel'); // Redirigir al panel si el usuario está verificado
+        } else {
+          errorMessage.value = "Por favor, verifica tu correo electrónico antes de iniciar sesión.";
+          await auth.signOut(); // Cerrar sesión si no está verificado
+        }
       } catch (error) {
-        this.errorMessage = "Usuario o contraseña incorrectos.";
-        console.error("Error de autenticación:", error);
+        errorMessage.value = "Usuario o contraseña incorrectos.";
       }
-    },
-    goToRegister() {
-      this.$router.push("/register");
-    },
-  },
-};
+    };
+
+    const goToRegister = () => {
+      router.push('/register');
+    };
+
+    onMounted(() => {
+      if (route.query.message === 'verify-email') {
+        infoMessage.value = 'Registro exitoso. Por favor, revisa tu correo electrónico para verificar tu cuenta.';
+      }
+    });
+
+    return {
+      email,
+      password,
+      handleLogin,
+      goToRegister,
+      errorMessage,
+      infoMessage
+    };
+  }
+}
 </script>
 
 <style scoped>
+/* Estilos básicos para html y body */
 html,
 body {
   margin: 0;
@@ -82,6 +105,8 @@ body {
   width: 100%;
   font-family: Arial, sans-serif;
 }
+
+/* Estilo para el contenedor de fondo */
 .back-container {
   position: absolute;
   top: 0;
@@ -90,6 +115,8 @@ body {
   height: 100vh;
   z-index: -1;
 }
+
+/* Estilo para el contenedor principal del login */
 .login-container {
   display: flex;
   height: 100%;
@@ -97,6 +124,7 @@ body {
   overflow: hidden;
 }
 
+/* Estilo para la imagen de login */
 .login-image {
   flex: 1;
   display: flex;
@@ -109,16 +137,18 @@ body {
     rgba(111, 95, 255, 0.75) 41%,
     rgba(249, 249, 255, 0.75) 76%
   );
-  width: 50%; /* Ocupa la mitad izquierda de la pantalla */
-  height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+  width: 50%;
+  height: 100vh;
   overflow: hidden;
 }
+
 .login-image img {
   width: 95%;
   height: 95%;
   object-fit: fill;
 }
 
+/* Estilo para el formulario de login */
 .login-form {
   flex: 1;
   display: flex;
@@ -128,15 +158,19 @@ body {
   padding: 20px;
   background-color: #ffffff;
 }
+
+/* Estructura de los elementos del formulario */
 .form-structure {
   margin-bottom: 15px;
 }
 
+/* Estilo del logo en el formulario */
 .logo {
   width: 150px;
   margin-bottom: 30px;
 }
 
+/* Estilo general del formulario */
 .form {
   display: flex;
   flex-direction: column;
@@ -144,11 +178,13 @@ body {
   max-width: 300px;
 }
 
+/* Estilo para los grupos de formularios */
 .form-group {
   margin-bottom: 25px;
   width: 100%;
 }
 
+/* Estilo para las etiquetas de los formularios */
 .form-group label {
   display: block;
   margin-bottom: 5px;
@@ -160,6 +196,7 @@ body {
   color: #333;
 }
 
+/* Estilo para los campos de entrada del formulario */
 .form-group input {
   width: 250px; 
   padding: 2px; 
@@ -169,26 +206,29 @@ body {
   background-color: #ffffff; 
  }
 
+/* Estilo para el botón de login */
 .login-button {
   padding: 0px;
   background-color: white;
   color: #23a6f0;
   border: 2px solid #23a6f0;
-  border-radius: 40px; /* Bordes redondeados */
+  border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 14px; /* Tamaño de la fuente ajustado */
-  width: 156px; /* Ancho ajustado */
-  height: 35px; /* Altura ajustada */
+  font-size: 14px;
+  width: 156px;
+  height: 35px;
   margin: 0 auto;
 }
 
+/* Estilo para el botón de login cuando se pasa el ratón por encima */
 .login-button:hover {
   background-color: #f0f0f0;
   color: #1e90ff;
   border-color: #1e90ff;
 }
 
+/* Estilo para los enlaces de recuperación de contraseña y registro */
 .login-links {
   margin-top: 20px;
   display: flex;
@@ -197,6 +237,7 @@ body {
   max-width: 300px;
 }
 
+/* Estilo para los enlaces */
 .login-links .link {
   color: #bebebe;
   text-decoration: none;
@@ -210,8 +251,15 @@ body {
   color: #4d4c4c;
 }
 
+/* Estilo para el mensaje de error */
 .error-message {
   color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
+/* Estilo para el mensaje informativo */
+.info-message {
+  color: green;
   font-weight: bold;
   margin-top: 10px;
 }
