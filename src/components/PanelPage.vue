@@ -11,6 +11,7 @@
           </div>
         </header>
       </div>
+      <button class="back-button" @click="goBack">← Ir a Inicio</button>
       <div class="content">
         <div class="left-section">
           <h3>Criterios y Parámetros Eléctricos de Inversor</h3>
@@ -26,8 +27,7 @@
             <label for="power">Potencia (W)</label>
             <input type="text" id="power" v-model="power" readonly />
           </div>
-          <button class="history-button">Ver Histórico de Datos</button>
-          <a href="#" class="more-info-link">Más información del Sistema</a>
+          <button class="capture-button">Capturar Datos</button>
         </div>
 
         <div class="separator"></div>
@@ -205,11 +205,16 @@ body {
 .logout-button {
   margin-left: 20px;
   padding: 5px 10px;
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  background-color: #fce3e3;
+  color: #23a6f0;
+  border: 2px solid #23a6f0;
+  border-radius: 40px; /* Bordes redondeados */
   cursor: pointer;
+  font-weight: bold;
+  font-size: 14px; /* Tamaño de la fuente ajustado */
+  width: 118px; /* Ancho ajustado */
+  height: 35px; /* Altura ajustada */
+  
 }
 
 .content {
@@ -278,7 +283,7 @@ h3 {
   background-color: #ffffff;
 }
 
-.history-button {
+.capture-button {
   padding: 0px;
   background-color: white;
   color: #23a6f0;
@@ -291,13 +296,25 @@ h3 {
   height: 35px; /* Altura ajustada */
   margin: 30px auto;
 }
-
+.back-button {
+  padding: 0px;
+  background-color: rgb(255, 255, 255);
+  color: #23a6f0;
+  border: 2px solid #23a6f0;
+  border-radius: 40px; /* Bordes redondeados */
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px; /* Tamaño de la fuente ajustado */
+  width: 108px; /* Ancho ajustado */
+  height: 35px; /* Altura ajustada */
+  margin: 30px ;
+}
 .camera-view {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 190px;
-  width: 70%;
+  width: 50%;
   background-color: #000;
   margin-bottom: 20px;
 }
