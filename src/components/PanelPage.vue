@@ -173,6 +173,10 @@ export default {
       router.push('/tabla');
     };
 
+    const goBack = () => {
+      router.push('/initial');
+    };
+
     return {
       voltage,
       current,
@@ -188,6 +192,7 @@ export default {
       guardarValores,
       logout,
       goToTablePage,
+      goBack,
     };
   }
 };

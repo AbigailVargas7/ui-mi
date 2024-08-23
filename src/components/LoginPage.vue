@@ -63,7 +63,7 @@ export default {
         const user = userCredential.user;
 
         if (user.emailVerified) {
-          router.push('/panel'); // Redirigir al panel si el usuario está verificado
+          router.push('/initial'); // Redirigir al panel si el usuario está verificado
         } else {
           errorMessage.value = "Por favor, verifica tu correo electrónico antes de iniciar sesión.";
           await auth.signOut(); // Cerrar sesión si no está verificado
