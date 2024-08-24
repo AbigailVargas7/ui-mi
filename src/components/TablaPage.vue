@@ -50,9 +50,9 @@
 
         <!-- Gráficos de líneas usando Chart.js -->
         <div v-if="chartsGenerated && areChartsDataValid" class="charts-container">
-          <canvas id="voltajeChart" width="400" height="200"></canvas>
-          <canvas id="corrienteChart" width="400" height="200"></canvas>
-          <canvas id="potenciaChart" width="400" height="200"></canvas>
+          <canvas id="voltajeChart" width="250" height="125"></canvas>
+          <canvas id="corrienteChart" width="250" height="125"></canvas>
+          <canvas id="potenciaChart" width="250" height="125"></canvas>
         </div>
       </div>
       <button @click="imprimirPagina" class="print-button">Imprimir Página</button>
@@ -127,21 +127,37 @@ export default {
             plugins: {
               title: {
                 display: true,
-                text: 'Voltaje vs Ángulo'
+                text: 'Voltaje vs Ángulo',
+                font: {
+                  size: 16
+                }
+              },
+              legend: {
+                labels: {
+                  font: {
+                    size: 14
+                  }
+                }
               }
             },
             scales: {
               x: {
                 title: {
                   display: true,
-                  text: 'Ángulo'
+                  text: 'Ángulo',
+                  font: {
+                    size: 14
+                  }
                 }
               },
               y: {
                 beginAtZero: true,
                 title: {
                   display: true,
-                  text: 'Voltaje (V)'
+                  text: 'Voltaje (V)',
+                  font: {
+                    size: 14
+                  }
                 }
               }
             }
@@ -166,21 +182,37 @@ export default {
             plugins: {
               title: {
                 display: true,
-                text: 'Corriente vs Ángulo'
+                text: 'Corriente vs Ángulo',
+                font: {
+                  size: 16
+                }
+              },
+              legend: {
+                labels: {
+                  font: {
+                    size: 14
+                  }
+                }
               }
             },
             scales: {
               x: {
                 title: {
                   display: true,
-                  text: 'Ángulo'
+                  text: 'Ángulo',
+                  font: {
+                    size: 14
+                  }
                 }
               },
               y: {
                 beginAtZero: true,
                 title: {
                   display: true,
-                  text: 'Corriente (mA)'
+                  text: 'Corriente (mA)',
+                  font: {
+                    size: 14
+                  }
                 }
               }
             }
@@ -205,21 +237,37 @@ export default {
             plugins: {
               title: {
                 display: true,
-                text: 'Potencia vs Ángulo'
+                text: 'Potencia vs Ángulo',
+                font: {
+                  size: 16
+                }
+              },
+              legend: {
+                labels: {
+                  font: {
+                    size: 14
+                  }
+                }
               }
             },
             scales: {
               x: {
                 title: {
                   display: true,
-                  text: 'Ángulo'
+                  text: 'Ángulo',
+                  font: {
+                    size: 14
+                  }
                 }
               },
               y: {
                 beginAtZero: true,
                 title: {
                   display: true,
-                  text: 'Potencia (W)'
+                  text: 'Potencia (W)',
+                  font: {
+                    size: 14
+                  }
                 }
               }
             }
@@ -236,7 +284,7 @@ export default {
     const limpiarGraficos = () => {
       chartsGenerated.value = false;
       if (voltajeChartInstance) voltajeChartInstance.destroy();
-      if (corrienteChartInstance) corrienteChartInstance.destroy();
+      if (corrienteChartInstance) voltajeChartInstance.destroy();
       if (potenciaChartInstance) potenciaChartInstance.destroy();
     };
 
@@ -263,19 +311,14 @@ export default {
       try {
         await remove(dbRef(db, 'historicos'));
         registros.value = [];
-        limpiarGraficos();
+        limpiarGraficos(); // Limpiar gráficos cuando se vacía la tabla
       } catch (error) {
         console.error("Error al vaciar la tabla:", error);
       }
     };
 
     const imprimirPagina = () => {
-      const printContents = document.getElementById("print-section").innerHTML;
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = printContents;
       window.print();
-      document.body.innerHTML = originalContents;
-      window.location.reload();
     };
 
     const logout = async () => {
@@ -391,10 +434,9 @@ export default {
 }
 
 #print-section { /* Contenedor para tabla y gráficos */
-  background-color: #ffffff;
+  background-color: transparent;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
@@ -435,7 +477,6 @@ export default {
   justify-content: space-around;
   align-items: center;
   margin-top: 20px;
-  width: 100%;
 }
 
 .empty-message {
