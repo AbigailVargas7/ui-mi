@@ -226,7 +226,7 @@ html, body {
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.3s;
-  border: 1px solid #000000; /* Borde de 2px, color personalizado */
+  border: 1px solid #ffee03; /* Borde de 2px, color personalizado */
 }
 .panel-content {
   font-family: 'Manrope', sans-serif; /* Tipografía Manrope */
@@ -234,7 +234,7 @@ html, body {
   margin-top: 30px; /* Padding aplicado solo al contenido del texto */
   margin-right: 40px;
   margin-left: 40px;
-  font-size: 158%; /* Tamaño de la fuente */
+  font-size: 200%; /* Tamaño de la fuente */
   max-width: 80%;
   max-height: 80%;
 }
@@ -244,7 +244,7 @@ html, body {
   color: white; /* Color blanco para el texto */
   text-align: center; /* Centrado horizontal */
   margin: 30px 40px;/* Limita el ancho del párrafo para evitar que se desborde */
-  font-size: 100%;
+  font-size: 110%;
   max-width: 80%;
   max-height: 80%;
 }
@@ -268,7 +268,8 @@ html, body {
   background-color:transparent ;
 }
 .panel:nth-child(3):hover {
-  background-color: #553801; 
+  background-color: #a4a702; 
+  /*background-color: #553801; */
 }
 .panel:nth-child(4) {
   background-color: transparent;
