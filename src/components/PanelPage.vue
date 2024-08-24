@@ -6,7 +6,7 @@
           <img src="@/assets/espol-logo.png" alt="Espol Logo" class="espol-logo" />
           <div class="account-info">
             <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
-             <button class="logout-button" @click="logout">Cerrar Sesión</button>
+            <button class="logout-button" @click="logout">Cerrar Sesión</button>
           </div>
         </header>
       </div>
@@ -14,17 +14,37 @@
       <div class="content">
         <div class="left-section">
           <h3>Criterios y Parámetros Eléctricos de Inversor</h3>
-          <div class="input-group">
-            <label for="voltage">Voltaje (V)</label>
-            <input type="text" id="voltage" v-model="voltage" readonly />
-          </div>
-          <div class="input-group">
-            <label for="current">Corriente (mA)</label>
-            <input type="text" id="current" v-model="current" readonly />
-          </div>
-          <div class="input-group">
-            <label for="power">Potencia (W)</label>
-            <input type="text" id="power" v-model="power" readonly />
+          <div class="input-columns">
+            <!-- Columna izquierda de parámetros eléctricos -->
+            <div class="input-column">
+              <div class="input-group">
+                <label for="voltage">Voltaje (V)</label>
+                <input type="text" id="voltage" v-model="voltage" readonly />
+              </div>
+              <div class="input-group">
+                <label for="current">Corriente (mA)</label>
+                <input type="text" id="current" v-model="current" readonly />
+              </div>
+              <div class="input-group">
+                <label for="power">Potencia (W)</label>
+                <input type="text" id="power" v-model="power" readonly />
+              </div>
+            </div>
+            <!-- Columna derecha de nuevos parámetros -->
+            <div class="input-column">
+              <div class="input-group">
+                <label for="temperature">Temperatura (°C)</label>
+                <input type="text" id="temperature" v-model="temperature" readonly />
+              </div>
+              <div class="input-group">
+                <label for="internal-resistance">Resistencia Interna (Ohm)</label>
+                <input type="text" id="internal-resistance" v-model="internalResistance" readonly />
+              </div>
+              <div class="input-group">
+                <label for="irradiance">Irradiancia (W/m²)</label>
+                <input type="text" id="irradiance" v-model="irradiance" readonly />
+              </div>
+            </div>
           </div>
           <button @click="guardarValores" class="save-button">Guardar Valores</button>
           <button @click="goToTablePage" class="history-button">Ver Histórico de Datos</button>
@@ -71,6 +91,9 @@ export default {
     const voltage = ref('');
     const current = ref('');
     const power = ref('');
+    const temperature = ref('');
+    const internalResistance = ref('');
+    const irradiance = ref('');
     const angleFromFirebase = ref(0);
     const angles = ref([0, 0]);
     const isLoading = ref(true);
@@ -92,6 +115,9 @@ export default {
       fetchData('voltaje', voltage);
       fetchData('corriente', current);
       fetchData('potencia', power);
+      fetchData('temperatura', temperature);
+      fetchData('resistencia_interna', internalResistance);
+      fetchData('irradiancia', irradiance);
       fetchData('angulo', angleFromFirebase);
       isLoading.value = false;
     });
@@ -140,11 +166,13 @@ export default {
         voltaje: voltage.value,
         corriente: current.value,
         potencia: power.value,
+        temperatura: temperature.value,
+        resistencia_interna: internalResistance.value,
+        irradiancia: irradiance.value,
         fecha: fecha.toLocaleDateString(),
         hora: fecha.toLocaleTimeString(),
       };
 
-      // Guardar en Firebase
       const newRegistroRef = push(dbRef(db, 'historicos'));
       set(newRegistroRef, nuevoRegistro)
         .then(() => {
@@ -161,7 +189,7 @@ export default {
     const logout = async () => {
       try {
         const db = getDatabase();
-        await remove(dbRef(db, 'historicos')); // Eliminar todos los registros
+        await remove(dbRef(db, 'historicos'));
         await signOut(auth);
         router.push('/');
       } catch (error) {
@@ -181,6 +209,9 @@ export default {
       voltage,
       current,
       power,
+      temperature,
+      internalResistance,
+      irradiance,
       angleFromFirebase,
       angles,
       isLoading,
@@ -199,13 +230,13 @@ export default {
 </script>
 
 <style scoped>
-/* Mantén los estilos que ya tenías */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
   overflow: hidden;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .panel-back {
@@ -216,7 +247,6 @@ html, body {
   height: 100vh;
   z-index: -1;
 }
-
 .panel-container {
   display: flex;
   flex-direction: column;
@@ -224,6 +254,22 @@ html, body {
   width: 100%;
   font-family: Arial, sans-serif;
   margin: 0;
+}
+
+.input-columns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Centrar contenido verticalmente */
+  width: 100%; /* Ajusta el ancho */
+  padding: 10px 0; /* Espaciado alrededor de los contenidos */
+}
+
+.input-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra horizontalmente cada columna */
+  padding: 0 10px;
 }
 
 .top-bar-background {
@@ -237,7 +283,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   width: 95%;
-  margin: 0;
+  margin: 0 auto;
   height: 100%;
   padding: 0;
 }
@@ -260,23 +306,38 @@ html, body {
 
 .logout-button {
   margin-left: 5px;
-    background-color: transparent; /* Fondo transparente */
-  color: #000000; /* Color del texto */
-  border: none; /* Sin bordes */
-  border-radius: 40px; /* Bordes redondeados (opcional si se necesita en el diseño) */
+  background-color: transparent;
+  color: #000000;
+  border: none;
+  border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 14px; /* Tamaño de la fuente ajustado */
-  width: 118px; /* Ancho ajustado */
-  height: 35px; /* Altura ajustada */
-  transition: background-color 0.3s, color 0.3s; /* Efecto de transición para el hover */
+  font-size: 14px;
+  width: 118px;
+  height: 35px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-/* Efecto hover opcional */
 .logout-button:hover {
-  background-color: rgba(0, 0, 0, 0.1); /* Ligera transparencia al pasar el ratón */
-  color: #000000; /* Asegura que el texto siga siendo visible */
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #000000;
 }
+
+.back-button {
+  padding: 0px;
+  background-color: white;
+  color: #23a6f0;
+  border: 2px solid #23a6f0;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  width: 100px;
+  height: 40px;
+  margin: 20px 50px;
+  text-align: center;
+}
+
 .content {
   display: flex;
   flex: 1;
@@ -287,13 +348,14 @@ html, body {
 
 .left-section {
   flex: 1;
-  margin-left: 20px;
-  margin-right: 30px;
+  margin-left: auto; /* Centra el contenido horizontalmente */
+  margin-right: auto; /* Centra el contenido horizontalmente */
   font-weight: bold;
-  font-size: 14px; 
+  font-size: 14px;
   color: #333;
   display: flex;
   flex-direction: column;
+  align-items: center; /* Centra el contenido horizontalmente */
 }
 
 .right-section {
@@ -316,14 +378,18 @@ h3 {
   font-size: 14px;
   font-family: 'Montserrat', sans-serif;
   font-style: italic;
-  font-weight: 600; 
+  font-weight: 600;
   text-decoration: underline;
   margin-bottom: 20px;
-  color:#000000;
+  color: #000000;
+  text-align: center; /* Centra el texto */
 }
 
 .input-group {
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra cada grupo de entrada */
 }
 
 .input-group label {
@@ -334,15 +400,16 @@ h3 {
 }
 
 .input-group input {
-  width: 50%; 
-  padding: 2px; 
+  width: 80%; /* Ajusta el ancho del input */
+  padding: 5px; /* Espaciado dentro del input */
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
   background-color: #ffffff;
+  text-align: center; /* Centra el texto del input */
 }
 
-.capture-button {
+.save-button{
   padding: 0px;
   background-color: white;
   color: #23a6f0;
@@ -351,41 +418,31 @@ h3 {
   cursor: pointer;
   font-weight: bold;
   font-size: 14px;
-  width: 208px;
-  height: 35px;
-  margin: 30px auto;
-}
-.back-button{
-  padding: 0px;
-  background-color: white;
-  color: #23a6f0;
-  border: 2px solid #23a6f0;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 12px;
-  width: 60px;
-  height: 35px;
-  margin: 10px;
-}
-.save-button {
-  padding: 0px;
-  background-color: white;
-  color: #23a6f0;
-  border: 2px solid #23a6f0;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  width: 208px;
+  width: 180px;
   height: 35px;
   margin: 30px auto;
 }
 
 .save-button:hover {
-  background-color: #218838;
+  background-color: #95cfc92d;
 }
-
+.history-button {
+  padding: 0px;
+  background-color: transparent;
+  color: #1e2d36b9;
+  border: transparent;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  width: 180px;
+  height: 35px;
+  margin: 0px auto;
+  text-decoration: underline;
+}
+.history-button:hover {
+  color: #000000d7;
+}
 .camera-view {
   display: flex;
   align-items: center;
@@ -430,7 +487,7 @@ h3 {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  width: 50%; 
+  width: 50%;
   background-color: #ffffff;
 }
 
@@ -444,13 +501,14 @@ h3 {
 
 .more-info-link:hover {
   color: #000000;
-  text-decoration: none; 
+  text-decoration: none;
 }
 
-/* Estilo para el mensaje de éxito */
 .success-message {
   color: green;
   font-weight: bold;
   margin-top: 10px;
 }
 </style>
+
+

@@ -263,7 +263,7 @@ export default {
       try {
         await remove(dbRef(db, 'historicos'));
         registros.value = [];
-        limpiarGraficos(); // Limpiar gráficos cuando se vacía la tabla
+        limpiarGraficos();
       } catch (error) {
         console.error("Error al vaciar la tabla:", error);
       }
@@ -435,6 +435,7 @@ export default {
   justify-content: space-around;
   align-items: center;
   margin-top: 20px;
+  width: 100%;
 }
 
 .empty-message {
