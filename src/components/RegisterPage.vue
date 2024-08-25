@@ -172,8 +172,12 @@ html, body {
 }
 
 .form-container {
-  padding: 5px;
+  display: flex; /* Utiliza Flexbox */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; 
+  padding: 0px;
   margin-top: 10px;
+  flex-direction: column; 
 }
 
 /* Estilo del formulario de registro */
@@ -189,14 +193,14 @@ html, body {
 /* Grupo de campos de formulario */
 .form-group {
   margin-bottom: 10px;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
 /* Estilo de las etiquetas */
 .form-group label {
   display: block;
   margin-bottom: 5px;
-  margin-left: 70px;
+  margin-left: 0px;
   padding: 4px;
   font-weight: bold;
   font-size: 14px;
