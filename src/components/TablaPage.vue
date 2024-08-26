@@ -74,7 +74,7 @@
             v-if="chartsGenerated && areChartsDataValid"
             class="charts-container"
           >
-            <canvas id="voltajeChart" width="250" height="125"></canvas>
+            <canvas id="voltajeChart" width="100" height="125"></canvas>
             <canvas id="corrienteChart" width="250" height="125"></canvas>
             <canvas id="potenciaChart" width="250" height="125"></canvas>
           </div>
@@ -586,7 +586,8 @@ body {
 
 .charts-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  max-width: 33%;
   justify-content: space-around;
   align-items: center;
   margin-top: 20px;

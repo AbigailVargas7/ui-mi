@@ -15,7 +15,16 @@
       <!-- Contenedor principal -->
       <div class="main-content">
         <!-- Botón de  regreso -->
-        <button class="back-button" @click="goBack">← Ir a Inicio</button>
+       
+         <v-btn elevated @click="goBack"
+         color="teal-lighten-4"
+          class="ma-2"
+        >
+          <v-icon
+            start
+          > mdi-arrow-left</v-icon>
+          Ir a Inicio
+        </v-btn>
 
         <!-- Descripción general de la página -->
         <div class="page-description">
