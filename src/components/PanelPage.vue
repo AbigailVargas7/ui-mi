@@ -13,7 +13,7 @@
       <button class="back-button" @click="goBack">← Inicio</button>
       <div class="content">
         <div class="left-section">
-          <h3>Criterios y Parámetros Eléctricos de Inversor</h3>
+          <h3>Criterios y Parámetros de Paneles</h3>
           <div class="input-columns">
             <!-- Columna izquierda de parámetros eléctricos -->
             <div class="input-column">
@@ -47,7 +47,7 @@
             </div>
           </div>
           <button @click="guardarValores" class="save-button">Guardar Valores</button>
-          <button @click="goToTablePage" class="history-button">Ver Histórico de Datos</button>
+          <button @click="goToTablePage" class="history-button">Ver Datos Capturados</button>
           <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
         </div>
         <div class="separator"></div>
