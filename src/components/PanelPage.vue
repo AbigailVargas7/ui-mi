@@ -54,7 +54,7 @@
         <div class="right-section">
           <h3>Vista de Cámara</h3>
           <div class="camera-view">
-            <img src="@/assets/no-video.png" alt="No Video" />
+            <img :src="cameraStream" alt="Video Stream" />
           </div>
           <h3>Control de Inclinación de Paneles</h3>
           <div class="control-group">
@@ -99,6 +99,9 @@ export default {
     const isLoading = ref(true);
     const successMessage = ref(null);
     const db = getDatabase();
+
+    // URL pública proporcionada por ngrok
+    const cameraStream = ref('https://2840-192-188-59-85.ngrok-free.app/stream'); // Reemplaza con la URL proporcionada por ngrok
 
     const fetchData = (path, targetRef) => {
       const dataRef = dbRef(db, path);
@@ -206,6 +209,7 @@ export default {
     };
 
     return {
+      cameraStream,  // Añadido para la transmisión de la cámara
       voltage,
       current,
       power,
