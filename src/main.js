@@ -34,3 +34,5 @@ if (process.env.NODE_ENV !== 'production') {
   console.log('Firebase Database:', db);
   console.log('Firebase Auth:', auth);
 }
+
+

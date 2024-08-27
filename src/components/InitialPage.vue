@@ -8,8 +8,16 @@
           class="espol-logo"
         />
         <div class="account-info">
-          <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
-          <button class="logout-button" @click="logout">Cerrar Sesión</button>
+          <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
+          <v-btn
+            class="button"
+            prepend-icon="mdi-account"
+            variant="text"
+            rounded="xl"
+            @click="logout"
+            >Cerrar Sesión
+          </v-btn>
+          <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
         </div>
       </header>
     </div>
@@ -31,7 +39,10 @@
             </p>
           </div>
           <div class="panel panel-2" @click="goTo('Tabla')">
-            <v-icon icon="mdi-human-male-board-poll" style="margin-left: 20px" />
+            <v-icon
+              icon="mdi-human-male-board-poll"
+              style="margin-left: 20px"
+            />
             <div class="panel-content">Gráficas y Tablas</div>
             <p class="panel-description">
               Visualización de datos recopilados durante la sesión, graficados y
@@ -39,14 +50,20 @@
             </p>
           </div>
           <div class="panel panel-3" @click="goTo('Manual')">
-            <v-icon icon="mdi-file-document-check-outline" style="margin-left: 20px" />
+            <v-icon
+              icon="mdi-file-document-check-outline"
+              style="margin-left: 20px"
+            />
             <div class="panel-content">Manual de Uso</div>
             <p class="panel-description">
               Guía de uso y operación del panel de Monitoreo.
             </p>
           </div>
           <div class="panel panel-4" @click="goTo('Info')">
-            <v-icon icon="mdi-information-slab-circle-outline" style="margin-left: 20px" />
+            <v-icon
+              icon="mdi-information-slab-circle-outline"
+              style="margin-left: 20px"
+            />
             <div class="panel-content">Información del Sistema</div>
             <p class="panel-description">
               Especificaciones técnicas y de rendimiento de los componentes del
@@ -139,31 +156,8 @@ body {
   height: 30px;
   margin-right: 5px;
 }
-
-.logout-button {
-  margin-left: 5px;
-  margin-right: 5px;
-  background-color: transparent; /* Fondo transparente */
-  color: #000000; /* Color del texto */
-  border: none; /* Sin bordes */
-  border-radius: 40px; /* Bordes redondeados (opcional si se necesita en el diseño) */
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px; /* Tamaño de la fuente ajustado */
-  width: 118px; /* Ancho ajustado */
-  height: 35px; /* Altura ajustada */
-  transition: background-color 0.3s, color 0.3s; /* Efecto de transición para el hover */
-}
-
-/* Efecto hover opcional */
-.logout-button:hover {
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.1
-  ); /* Ligera transparencia al pasar el ratón */
-  color: #000000; /* Asegura que el texto siga siendo visible */
+.button {
+  font-size: 12px !important;
 }
 .container {
   background-image: url("@/assets/solar-background-1.png");
@@ -180,12 +174,15 @@ body {
   align-items: center;
   height: 40%;
 }
-/* Título centrado */
 .page-title {
   font-weight: 800; /* ExtraBold */
-  font-size: 70px; /* Tamaño de la fuente */
+  font-size: 60px; /* Tamaño de la fuente */
   text-align: center;
   color: #ffffff;
+  display: inline-block;
+  margin: 0 0.5rem;
+  animation: bounceInLeft;
+  animation-duration: 2s;
 }
 
 .content {
@@ -222,7 +219,13 @@ body {
 }
 .panel:hover {
   background-color: #07918a;
+  display: inline-block;
+  margin: 0 0.5rem;
+  animation: bounce;
+  animation-duration: 1.2s;
+  animation-delay: 0.2s;
 }
+
 .panel-content {
   /* font-family: "Manrope", sans-serif;  */
   text-align: center;
@@ -230,7 +233,7 @@ body {
   margin-top: 0px; /* Padding aplicado solo al contenido del texto */
   margin-right: 25px;
   margin-left: 25px;
-  font-size: 200%; /* Tamaño de la fuente */
+  font-size: 195%; /* Tamaño de la fuente */
   max-width: 80%;
   max-height: 80%;
 }
@@ -240,7 +243,7 @@ body {
   color: white; /* Color blanco para el texto */
   text-align: center; /* Centrado horizontal */
   margin: 30px 40px; /* Limita el ancho del párrafo para evitar que se desborde */
-  font-size: 110%;
+  font-size: 101%;
   max-width: 80%;
   max-height: 80%;
 }

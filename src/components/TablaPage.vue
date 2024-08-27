@@ -1,93 +1,176 @@
 <template>
-  <div class="tabla-page-container">
-    <div class="total-container">
-      <div class="top-bar-background">
-        <header class="top-bar">
-          <img
-            src="@/assets/espol-logo.png"
-            alt="Espol Logo"
-            class="espol-logo"
-          />
-          <div class="account-info">
-            <img
-              src="@/assets/user-icon.png"
-              alt="User Icon"
-              class="user-icon"
-            />
-            <button class="logout-button" @click="logout">Cerrar Sesión</button>
-          </div>
-        </header>
-      </div>
-      <div class="content-wrapper">
-        <button class="back-button" @click="goBack">← Inicio</button>
-        <div id="print-section">
-          <!-- Contenedor que agrupa la tabla y los gráficos -->
-          <h1>Registro de Datos</h1>
-          <button @click="vaciarTabla" class="empty-button">
-            Vaciar Tabla
-          </button>
-          <p v-if="!registros.length" class="empty-message">
-            No hay datos para mostrar.
-          </p>
-          <table v-if="registros.length" class="data-table">
-            <thead>
-              <tr>
-                <th>Ángulo</th>
-                <th>Voltaje</th>
-                <th>Corriente</th>
-                <th>Potencia</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(registro, index) in registros" :key="index">
-                <td>{{ registro.angulo }}</td>
-                <td>{{ registro.voltaje }}</td>
-                <td>{{ registro.corriente }}</td>
-                <td>{{ registro.potencia }}</td>
-                <td>{{ registro.fecha }}</td>
-                <td>{{ registro.hora }}</td>
-                <td>
-                  <button @click="remove(index)" class="remove-button">
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Botones para generar y limpiar gráficos -->
-          <div class="graph-controls">
-            <button class="monitoring-button" @click="goToMonitoringPanel">Ir al Panel de Monitoreo</button>
-            <button @click="generarGraficos" class="generate-button">
-              Generar Gráficos
-            </button>
-            <button @click="limpiarGraficos" class="clear-button">
-              Limpiar Gráficos
-            </button>
-          </div>
-
-          <!-- Gráficos de líneas usando Chart.js -->
-          <div
-            v-if="chartsGenerated && areChartsDataValid"
-            class="charts-container"
+  <div>
+    <div class="top-bar-background">
+      <header class="top-bar">
+        <img
+          src="@/assets/espol-logo.png"
+          alt="Espol Logo"
+          class="espol-logo"
+        />
+        <div class="account-info">
+          <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
+          <v-btn
+            class="button"
+            prepend-icon="mdi-account"
+            variant="text"
+            rounded="xl"
+            @click="logout"
           >
-            <canvas id="voltajeChart" width="100" height="125"></canvas>
-            <canvas id="corrienteChart" width="250" height="125"></canvas>
-            <canvas id="potenciaChart" width="250" height="125"></canvas>
-          </div>
+            Cerrar Sesión
+          </v-btn>
+          <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
         </div>
-        <button @click="imprimirPagina" class="print-button">
-          Imprimir Página
-        </button>
+      </header>
+    </div>
+    <!-- <v-btn
+      color="cyan-lighten-4"
+      icon="mdi-arrow-left-bold"
+      elevation="4"
+      width="40px"
+      height="40px"
+      class="ml-3 mt-2"
+      @click="goBack"
+    ></v-btn> -->
+    <v-tooltip v-tooltip text="Volver a inicio">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          color="cyan-lighten-4"
+          icon="mdi-arrow-left-bold"
+          elevation="4"
+          width="40px"
+          height="40px"
+          class="ml-3 mt-2"
+          @click="goBack"
+        >
+        </v-btn>
+      </template>
+    </v-tooltip>
+    <div class="content">
+      <!-- <div id="print-section"> -->
+      <div class="tabla">
+        <!-- Contenedor que agrupa la tabla y los gráficos -->
+        <h3>Registro de Datos</h3>
+        <v-row justify="end" class="pa-2">
+          <v-btn
+            class="button"
+            color="cyan-lighten-4"
+            elevation="4"
+            rounded="xl"
+            @click="vaciarTabla"
+          >
+            Borrar Tabla
+          </v-btn>
+          <v-btn
+            class="button"
+            color="cyan-lighten-4"
+            elevation="4"
+            rounded="xl"
+            @click="goToMonitoringPanel"
+          >
+            Volver a Panel
+          </v-btn>
+        </v-row>
+        <!-- <button @click="vaciarTabla" class="empty-button">Vaciar Tabla</button> -->
+        <h3 v-if="!registros.length" class="empty-message">
+          No hay datos para mostrar.
+        </h3>
+        <!-- TABLAS -->
+        <table v-if="registros.length" class="data-table">
+          <thead>
+            <tr>
+              <th>Ángulo</th>
+              <th>Voltaje</th>
+              <th>Corriente</th>
+              <th>Potencia</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(registro, index) in registros" :key="index">
+              <td>{{ registro.angulo }}</td>
+              <td>{{ registro.voltaje }}</td>
+              <td>{{ registro.corriente }}</td>
+              <td>{{ registro.potencia }}</td>
+              <td>{{ registro.fecha }}</td>
+              <td>{{ registro.hora }}</td>
+              <td>
+                <v-btn
+                  class="button"
+                  color="red-lighten-3"
+                  elevation="4"
+                  @click="remove(index)"
+                >
+                  Eliminar
+                </v-btn>
+                <!-- <button @click="remove(index)" class="remove-button"> -->
+                <!-- Eliminar -->
+                <!-- </button> -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Botones para generar y limpiar gráficos -->
+        <div class="graph-controls">
+          <v-btn
+            class="button"
+            color="cyan-lighten-4"
+            elevation="4"
+            rounded="xl"
+            @click="generarGraficos"
+          >
+            Generar Gráficos
+          </v-btn>
+          <v-btn
+            class="button"
+            color="cyan-lighten-4"
+            elevation="4"
+            rounded="xl"
+            @click="limpiarGraficos"
+          >
+            Limpiar Gráficos
+          </v-btn>
+        </div>
+
+        <!-- Gráficos de líneas usando Chart.js -->
+        <div
+          v-if="chartsGenerated && areChartsDataValid"
+          class="charts-container"
+        >
+          <canvas
+            id="voltajeChart"
+            width="100%"
+            max-width="150px"
+            height="125"
+          ></canvas>
+          <canvas
+            id="corrienteChart"
+            width="100%"
+            max-width="150px"
+            height="125"
+          ></canvas>
+          <canvas
+            id="potenciaChart"
+            width="100%"
+            max-width="150px"
+            height="125"
+          ></canvas>
+        </div>
       </div>
+      <v-btn
+        class="button"
+        color="cyan-lighten-4"
+        elevation="4"
+        rounded="xl"
+        @click="imprimirPagina"
+      >
+        Imprimir Página
+      </v-btn>
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { ref, computed, onMounted, nextTick } from "vue";
@@ -380,10 +463,9 @@ export default {
     const goBack = () => {
       router.push("/initial");
     };
-   const goToMonitoringPanel = () => {
-      router.push("/panel"); 
+    const goToMonitoringPanel = () => {
+      router.push("/panel");
     };
-
 
     const areChartsDataValid = computed(() => {
       return registros.value.length > 0;
@@ -413,31 +495,12 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
-}
-
-.tabla-page-container {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-}
-
-.total-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+  overflow: hidden;
 }
 
 .top-bar-background {
   width: 100%;
-  height: 60px;
-  top: 0; 
-  left: 0;
-  margin: 0; 
-  padding: 0; 
+  height: 50px;
   background: linear-gradient(
     to right,
     rgba(0, 210, 246, 0.4) 0%,
@@ -447,9 +510,6 @@ body {
     rgba(169, 242, 255, 0.4) 75%,
     rgba(29, 162, 186, 0.4) 100%
   );
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  z-index: 1000; /* Asegura que la barra esté sobre otros elementos */
 }
 
 .top-bar {
@@ -457,119 +517,54 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin: 0 auto;
-  padding: 0;
+  margin: 0;
   height: 100%;
-  box-sizing: border-box;
+  padding: 0;
 }
 
 .espol-logo {
   height: 40px;
-  margin: 0 10px;
+  margin-left: 30px;
+}
+.button {
+  font-size: 12px !important;
 }
 
-.account-info {
-  display: flex;
-  align-items: center;
-  color: #000000;
-}
-
-.user-icon {
-  height: 30px;
-  margin-right: 10px;
-}
-
-.logout-button {
-  background-color: transparent;
-  color: #000000;
-  border: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  width: 120px;
-  height: 35px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.logout-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #000000;
-}
-
-.content-wrapper {
+.content {
   margin-top: 0px; /* Espacio debajo de la barra fija */
   width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 10px;
   padding-top: 0px;
 }
 
-.back-button {
-  background-color: white;
-  color: #23a6f0;
-  border: 2px solid #23a6f0;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 12px;
-  width: 120px;
-  height: 35px;
-  margin: 20px 20px;
-}
-
-#print-section {
+.tabla {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
-  padding: 20px;
+  padding: 10px 40px;
   border-radius: 8px;
   margin-bottom: 20px;
 }
-.monitoring-button {
-  padding: 10px;
-  background-color: transparent;
-  color: #1e2d36b9;
-  border: transparent;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  height: 35px;
-  margin-top: 15px;
-  text-decoration: underline;
+h3 {
+  font-size: 30px;
+  width: 90%;
+  margin-bottom: 1px;
+  margin-top: 1px;
+  text-align: center;
 }
 
-.monitoring-button:hover {
-  color: #000000d7;
-}
-
-
-
-
-
-.empty-button,
-.generate-button,
-.clear-button,
-.print-button {
-  background-color: #007bff;
-  color: white;
+.button {
   padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 10px;
+  margin: 15px;
 }
-
-.empty-button:hover,
-.generate-button:hover,
-.clear-button:hover,
-.print-button:hover {
-  background-color: #0056b3;
-}
-
 .data-table {
-  width: 100%;
+  width: 90%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  min-width: 400px;
+  text-align: center;
+  margin: 15px;
 }
 
 .data-table th,
@@ -583,35 +578,20 @@ body {
   background-color: #f2f2f2;
   color: #333;
 }
-
-.charts-container {
-  display: flex;
-  flex-direction: row;
-  max-width: 33%;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: 20px;
-}
-
 .empty-message {
   font-weight: bold;
   color: #ff4d4d;
   margin-bottom: 20px;
 }
-
-.remove-button {
-  background-color: #ff4d4d;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
+.charts-container {
+  display: flex;
+  flex-direction: row;
+  max-width: 33%;
+  justify-content: center;
+  align-items: center;
+  align-items: center;
+  margin-top: 20px;
 }
-
-.remove-button:hover {
-  background-color: #d43f3f;
-}
-
 .graph-controls {
   display: flex;
   justify-content: center;

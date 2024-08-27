@@ -1,99 +1,125 @@
 <template>
-  <div class="panel-back">
-    <div class="panel-container">
-      <!-- Barra superior con logo y botón de cierre de sesión -->
-      <div class="top-bar-background">
-        <header class="top-bar">
-          <img src="@/assets/espol-logo.png" alt="Espol Logo" class="espol-logo" />
-          <div class="account-info">
-            <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
-            <button class="logout-button" @click="logout">Cerrar Sesión</button>
-          </div>
-        </header>
-      </div>
-      
-      <!-- Contenedor principal -->
-      <div class="main-content">
-        <!-- Botón de  regreso -->
-       
-         <v-btn elevated @click="goBack"
-         color="teal-lighten-4"
-          class="ma-2"
+  <div >
+    <div class="top-bar-background">
+      <header class="top-bar">
+        <img
+          src="@/assets/espol-logo.png"
+          alt="Espol Logo"
+          class="espol-logo"
+        />
+        <div class="account-info">
+          <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
+          <v-btn
+            class="button"
+            prepend-icon="mdi-account"
+            variant="text"
+            rounded="xl"
+            @click="logout"
+          >
+            Cerrar Sesión
+          </v-btn>
+          <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
+        </div>
+      </header>
+    </div>
+    <v-tooltip v-tooltip text="Volver a inicio">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          color="cyan-lighten-4"
+          icon="mdi-arrow-left-bold"
+          elevation="4"
+          width="40px"
+          height="40px"
+          class="ml-3 mt-2"
+          @click="goBack"
         >
-          <v-icon
-            start
-          > mdi-arrow-left</v-icon>
-          Ir a Inicio
         </v-btn>
+      </template>
+    </v-tooltip>
+    <!-- Descripción general de la página -->
+    <div class="page-description">
+      En esta sección se explicará cada parte del panel de monitoreo y qué
+      representa.
+    </div>
 
-        <!-- Descripción general de la página -->
-        <div class="page-description">
-          En esta sección se explicará cada parte del panel de monitoreo y qué representa.
+    <!-- Contenido principal de la página -->
+    <div class="content">
+      <!-- Primer cuadro rojo con descripción -->
+      <div class="section-container top-left">
+        <div class="red-box">
+          <img
+            src="@/assets/imagen-1.png"
+            alt="Criterios y Parámetros Eléctricos de Inversor"
+            class="section-image"
+          />
         </div>
+        <p class="section-description">
+          Criterios y Parámetros Eléctricos de Inversor
+        </p>
+        <p class="info-description">
+          En este primer recuadro se muestran en tiempo real, los valores
+          importantes recolectados del inversor, así como el total de todos los
+          paneles conectados.
+        </p>
+      </div>
 
-        <!-- Contenido principal de la página -->
-        <div class="content">
-          <!-- Primer cuadro rojo con descripción -->
-          <div class="section-container top-left">
-            <div class="red-box">
-              <img src="@/assets/imagen-1.png" alt="Criterios y Parámetros Eléctricos de Inversor" class="section-image" />
-            </div>
-            <p class="section-description">
-              Criterios y Parámetros Eléctricos de Inversor
-            </p>
-            <p class="info-description">
-              En este primer recuadro se muestran en tiempo real, los valores importantes recolectados del inversor, así como el total de todos los paneles conectados.
-            </p>
-          </div>
-
-          <!-- Segundo cuadro rojo con descripción -->
-          <div class="section-container bottom-left">
-            <div class="red-box">
-              <img src="@/assets/imagen-2.png" alt="Guardar Datos" class="section-image" />
-            </div>
-            <p class="section-description">
-              Guardar Datos
-            </p>
-            <p class="info-description">
-              En este botón se guardan los parámetros del inversor y ángulos de inclinación, pueden usarse para gráficas.
-            </p>
-          </div>
-
-          <!-- Tercer cuadro rojo con descripción -->
-          <div class="section-container top-right">
-            <div class="red-box">
-              <img src="@/assets/imagen-3.png" alt="Vista de Cámara" class="section-image" />
-            </div>
-            <p class="section-description">
-              Vista de Cámara
-            </p>
-            <p class="info-description">
-              En esta vista se puede apreciar en tiempo real el video de los paneles solares, como forma de comprobar el funcionamiento.
-            </p>
-          </div>
-
-          <!-- Cuarto cuadro rojo con descripción -->
-          <div class="section-container bottom-right">
-            <div class="red-box">
-              <img src="@/assets/imagen-4.png" alt="Control de Inclinación de Paneles" class="section-image" />
-            </div>
-            <p class="section-description">
-              Control de Inclinación de Paneles
-            </p>
-            <p class="info-description">
-              Esta es la sección donde se controla la inclinación de los paneles. Puedes subir y bajar usando los botones + y -. Se observan los ángulos ajustados en grados.
-            </p>
-          </div>
+      <!-- Segundo cuadro rojo con descripción -->
+      <div class="section-container bottom-left">
+        <div class="red-box">
+          <img
+            src="@/assets/imagen-2.png"
+            alt="Guardar Datos"
+            class="section-image"
+          />
         </div>
+        <p class="section-description">Guardar Datos</p>
+        <p class="info-description">
+          En este botón se guardan los parámetros del inversor y ángulos de
+          inclinación, pueden usarse para gráficas.
+        </p>
+      </div>
+
+      <!-- Tercer cuadro rojo con descripción -->
+      <div class="section-container top-right">
+        <div class="red-box">
+          <img
+            src="@/assets/imagen-3.png"
+            alt="Vista de Cámara"
+            class="section-image"
+          />
+        </div>
+        <p class="section-description">Vista de Cámara</p>
+        <p class="info-description">
+          En esta vista se puede apreciar en tiempo real el video de los paneles
+          solares, como forma de comprobar el funcionamiento.
+        </p>
+      </div>
+
+      <!-- Cuarto cuadro rojo con descripción -->
+      <div class="section-container bottom-right">
+        <div class="red-box">
+          <img
+            src="@/assets/imagen-4.png"
+            alt="Control de Inclinación de Paneles"
+            class="section-image"
+          />
+        </div>
+        <p class="section-description">Control de Inclinación de Paneles</p>
+        <p class="info-description">
+          Esta es la sección donde se controla la inclinación de los paneles.
+          Puedes subir y bajar usando los botones + y -. Se observan los ángulos
+          ajustados en grados.
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 import { signOut } from "firebase/auth";
-import { auth } from '../firebase';
+import { auth } from "../firebase";
 
 export default {
   name: "ManualPage",
@@ -103,55 +129,51 @@ export default {
     const logout = async () => {
       try {
         await signOut(auth);
-        router.push('/');
+        router.push("/");
       } catch (error) {
         console.error("Error al cerrar sesión: ", error);
       }
     };
 
     const goBack = () => {
-      router.push('/initial');
+      router.push("/initial");
     };
 
     return {
       logout,
       goBack,
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
-.panel-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-}
-
-.panel-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  margin: 0;
+.button {
+  font-size: 12px !important;
 }
 
 .top-bar-background {
   width: 100%;
   height: 50px;
-  background: linear-gradient(to right, rgba(0, 210, 246, 0.4) 0%, rgba(138, 174, 229, 0.4) 17%, rgba(29, 162, 186, 0.4) 40%, rgba(103, 218, 239, 0.4) 60%, rgba(169, 242, 255, 0.4) 75%, rgba(29, 162, 186, 0.4) 100%);
+  background: linear-gradient(
+    to right,
+    rgba(0, 210, 246, 0.4) 0%,
+    rgba(138, 174, 229, 0.4) 17%,
+    rgba(29, 162, 186, 0.4) 40%,
+    rgba(103, 218, 239, 0.4) 60%,
+    rgba(169, 242, 255, 0.4) 75%,
+    rgba(29, 162, 186, 0.4) 100%
+  );
 }
 
 .top-bar {
@@ -167,17 +189,6 @@ html, body {
 .espol-logo {
   height: 40px;
   margin-left: 30px;
-}
-
-.account-info {
-  display: flex;
-  align-items: center;
-  color: #000000;
-}
-
-.user-icon {
-  height: 30px;
-  margin-right: 5px;
 }
 
 .logout-button {
@@ -248,7 +259,7 @@ html, body {
   width: 100%;
   max-width: 400px;
   height: 250px;
-  border: 2px solid #FF0000;
+  border: 2px solid #ff0000;
   display: flex;
   justify-content: center;
   align-items: center;
