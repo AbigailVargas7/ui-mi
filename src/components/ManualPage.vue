@@ -10,7 +10,7 @@
         <div class="account-info">
           <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
           <v-btn
-            class="button"
+            class="button-out"
             prepend-icon="mdi-account"
             variant="text"
             rounded="xl"
@@ -22,7 +22,7 @@
         </div>
       </header>
     </div>
-    <v-tooltip v-tooltip text="Volver a inicio">
+    <!-- <v-tooltip v-tooltip text="Volver a inicio">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -36,7 +36,19 @@
         >
         </v-btn>
       </template>
-    </v-tooltip>
+    </v-tooltip> -->
+    <v-card>
+      <!-- Tabs para navegar entre las páginas -->
+      <v-tabs v-model="tab" align-tabs="center">
+        <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
+        <v-tab :value="2" @click="navigateTo('/panel')"
+          >Panel de Monitoreo</v-tab>
+        <v-tab :value="3" @click="navigateTo('/tabla')">Tablas y Gráficas</v-tab>
+        <v-tab :value="4" @click="navigateTo('/info')">Información</v-tab>
+      </v-tabs>
+    </v-card>
+    
+    
     <!-- Descripción general de la página -->
     <div class="page-description">
       En esta sección se explicará cada parte del panel de monitoreo y qué
@@ -138,10 +150,13 @@ export default {
     const goBack = () => {
       router.push("/initial");
     };
-
+    const navigateTo = (route) => {
+      router.push(route); // Navega a la ruta especificada
+    };
     return {
       logout,
       goBack,
+      navigateTo,
     };
   },
 };
@@ -158,7 +173,7 @@ body {
   font-family: "Montserrat", sans-serif;
 }
 
-.button {
+.button-out {
   font-size: 12px !important;
 }
 

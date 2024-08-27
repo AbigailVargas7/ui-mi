@@ -4,40 +4,110 @@
       <!-- Barra superior con logo y botón de cierre de sesión -->
       <div class="top-bar-background">
         <header class="top-bar">
-          <img src="@/assets/espol-logo.png" alt="Espol Logo" class="espol-logo" />
+          <img
+            src="@/assets/espol-logo.png"
+            alt="Espol Logo"
+            class="espol-logo"
+          />
           <div class="account-info">
-            <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" />
-            <button class="logout-button" @click="logout">Cerrar Sesión</button>
+            <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
+            <v-btn
+              class="button-out"
+              prepend-icon="mdi-account"
+              variant="text"
+              rounded="xl"
+              @click="logout"
+            >
+              Cerrar Sesión
+            </v-btn>
+            <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
           </div>
         </header>
       </div>
-      
+      <!-- <v-tooltip v-tooltip text="Volver a inicio">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          v-bind="props"
+          color="cyan-lighten-4"
+          icon="mdi-arrow-left-bold"
+          elevation="4"
+          width="40px"
+          height="40px"
+          class="ml-3 mt-2"
+          @click="goBack"
+        >
+        </v-btn>
+      </template>
+    </v-tooltip> -->
+      <v-card>
+        <!-- Tabs para navegar entre las páginas -->
+        <v-tabs v-model="tab" align-tabs="center">
+          <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
+          <v-tab :value="2" @click="navigateTo('/panel')"
+            >Panel de Monitoreo</v-tab
+          >
+          <v-tab :value="3" @click="navigateTo('/tabla')"
+            >Tablas y Gráficas</v-tab
+          >
+          <v-tab :value="4" @click="navigateTo('/manual')">Manual</v-tab>
+        </v-tabs>
+      </v-card>
+
       <!-- Contenido principal -->
       <div class="content">
         <h1 class="page-title">Sistema de Generación de Energía On-Grid</h1>
         <p class="description">
-          Un sistema de generación de energía on-grid está conectado a la red eléctrica pública. Estos sistemas permiten que la energía generada por paneles solares se utilice directamente en la red, proporcionando energía adicional o vendiendo el exceso de energía.
+          Un sistema de generación de energía on-grid está conectado a la red
+          eléctrica pública. Estos sistemas permiten que la energía generada por
+          paneles solares se utilice directamente en la red, proporcionando
+          energía adicional o vendiendo el exceso de energía.
         </p>
         <p class="description">
-          A continuación, se proporcionan los documentos técnicos y manuales de usuario para los inversores y paneles solares utilizados en este sistema:
+          A continuación, se proporcionan los documentos técnicos y manuales de
+          usuario para los inversores y paneles solares utilizados en este
+          sistema:
         </p>
-        
+
         <div class="pdf-links">
           <div class="pdf-item">
-            <img src="@/assets/inversor-icon.png" alt="Inversor Icon" class="pdf-icon" />
-            <a :href="pdfInversorDatasheet" target="_blank" class="pdf-link">Descargar Datasheet del Inversor</a>
+            <img
+              src="@/assets/inversor-icon.png"
+              alt="Inversor Icon"
+              class="pdf-icon"
+            />
+            <a :href="pdfInversorDatasheet" target="_blank" class="pdf-link"
+              >Descargar Datasheet del Inversor</a
+            >
           </div>
           <div class="pdf-item">
-            <img src="@/assets/grid-icon.png" alt="Grid Icon" class="pdf-icon" />
-            <a :href="pdfPanelesDatasheet" target="_blank" class="pdf-link">Descargar Datasheet de los Paneles</a>
+            <img
+              src="@/assets/grid-icon.png"
+              alt="Grid Icon"
+              class="pdf-icon"
+            />
+            <a :href="pdfPanelesDatasheet" target="_blank" class="pdf-link"
+              >Descargar Datasheet de los Paneles</a
+            >
           </div>
           <div class="pdf-item">
-            <img src="@/assets/ahorros-icon.png" alt="Ahorros Icon" class="pdf-icon" />
-            <a :href="pdfInversorManual" target="_blank" class="pdf-link">Descargar Manual de Usuario del Inversor</a>
+            <img
+              src="@/assets/ahorros-icon.png"
+              alt="Ahorros Icon"
+              class="pdf-icon"
+            />
+            <a :href="pdfInversorManual" target="_blank" class="pdf-link"
+              >Descargar Manual de Usuario del Inversor</a
+            >
           </div>
           <div class="pdf-item">
-            <img src="@/assets/grid-icon.png" alt="Grid Icon" class="pdf-icon" />
-            <a :href="pdfPanelesManual" target="_blank" class="pdf-link">Descargar Manual de Usuario de los Paneles</a>
+            <img
+              src="@/assets/grid-icon.png"
+              alt="Grid Icon"
+              class="pdf-icon"
+            />
+            <a :href="pdfPanelesManual" target="_blank" class="pdf-link"
+              >Descargar Manual de Usuario de los Paneles</a
+            >
           </div>
         </div>
       </div>
@@ -46,37 +116,53 @@
 </template>
 
 <script>
-import pdfInversorDatasheet from '@/assets/Inversor_Datasheet.pdf';
-import pdfPanelesDatasheet from '@/assets/Paneles_Datasheet.pdf';
-import pdfInversorManual from '@/assets/Inversor_Manual_Usuario.pdf';
-import pdfPanelesManual from '@/assets/Paneles_Manual_Usuario.pdf';
+import { useRouter } from "vue-router";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
+import pdfInversorDatasheet from "@/assets/Inversor_Datasheet.pdf";
+import pdfPanelesDatasheet from "@/assets/Paneles_Datasheet.pdf";
+import pdfInversorManual from "@/assets/Inversor_Manual_Usuario.pdf";
+import pdfPanelesManual from "@/assets/Paneles_Manual_Usuario.pdf";
 
 export default {
   name: "SystemInfoPage",
   setup() {
+    const router = useRouter();
+    
+    const logout = async () => {
+      try {
+        await signOut(auth);
+        router.push("/");
+      } catch (error) {
+        console.error("Error al cerrar sesión: ", error);
+      }
+    };
+
+    const navigateTo = (route) => {
+      router.push(route); // Navega a la ruta especificada
+    };
+
     return {
       pdfInversorDatasheet,
       pdfPanelesDatasheet,
       pdfInversorManual,
       pdfPanelesManual,
+      logout,
+      navigateTo,
     };
   },
-  methods: {
-    logout() {
-      this.$router.push('/');
-    }
-  }
 };
 </script>
 
 <style scoped>
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .panel-back {
@@ -99,7 +185,15 @@ html, body {
 .top-bar-background {
   width: 100%;
   height: 50px;
-  background: linear-gradient(to right, rgba(0, 210, 246, 0.4) 0%, rgba(138, 174, 229, 0.4) 17%, rgba(29, 162, 186, 0.4) 40%, rgba(103, 218, 239, 0.4) 60%, rgba(169, 242, 255, 0.4) 75%, rgba(29, 162, 186, 0.4) 100%);
+  background: linear-gradient(
+    to right,
+    rgba(0, 210, 246, 0.4) 0%,
+    rgba(138, 174, 229, 0.4) 17%,
+    rgba(29, 162, 186, 0.4) 40%,
+    rgba(103, 218, 239, 0.4) 60%,
+    rgba(169, 242, 255, 0.4) 75%,
+    rgba(29, 162, 186, 0.4) 100%
+  );
 }
 
 .top-bar {
@@ -128,24 +222,10 @@ html, body {
   margin-right: 5px;
 }
 
-.logout-button {
-  margin-left: 5px;
-  background-color: transparent;
-  color: #000000;
-  border: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  width: 118px;
-  height: 35px;
-  transition: background-color 0.3s, color 0.3s;
+.button-out {
+  font-size: 12px !important;
 }
 
-.logout-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #000000;
-}
 
 .content {
   flex: 1;
