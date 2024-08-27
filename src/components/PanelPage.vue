@@ -22,7 +22,7 @@
         </div>
       </header>
     </div>
-    <v-btn
+    <!-- <v-btn
       color="cyan-lighten-4"
       icon="mdi-arrow-left-bold"
       elevation="4"
@@ -30,8 +30,19 @@
       height="40px"
       class="ml-3 mt-2"
       @click="goBack"
-    ></v-btn>
+    ></v-btn> -->
     <!-- <button class="back-button" @click="goBack">← Inicio</button> -->
+    <v-card>
+    <!-- Tabs para navegar entre las páginas -->
+    <v-tabs
+      v-model="tab"
+      align-tabs="center">
+      <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
+      <v-tab :value="2" @click="navigateTo('/tabla')">Tablas y Gráficas</v-tab>
+      <v-tab :value="3" @click="navigateTo('/manual')">Manual</v-tab>
+      <v-tab :value="4" @click="navigateTo('/info')">Información</v-tab>
+    </v-tabs>
+  </v-card>
     <div class="content">
       <div class="left-section">
         <h3>Parámetros eléctricos y de funcionamiento Paneles</h3>
@@ -431,6 +442,9 @@ export default {
     const goBack = () => {
       router.push("/initial");
     };
+    const navigateTo = (route) => {
+      router.push(route); // Navega a la ruta especificada
+    };
 
     return {
       cameraStream, // Añadido para la transmisión de la cámara
@@ -452,6 +466,7 @@ export default {
       logout,
       goToTablePage,
       goBack,
+      navigateTo,
     };
   },
 };

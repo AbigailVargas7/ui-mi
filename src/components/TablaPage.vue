@@ -10,13 +10,11 @@
         <div class="account-info">
           <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
           <v-btn
-            class="button"
+            class="button-out"
             prepend-icon="mdi-account"
             variant="text"
             rounded="xl"
-            @click="logout"
-          >
-            Cerrar Sesión
+            @click="logout">Cerrar Sesión
           </v-btn>
           <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
         </div>
@@ -31,7 +29,7 @@
       class="ml-3 mt-2"
       @click="goBack"
     ></v-btn> -->
-    <v-tooltip v-tooltip text="Volver a inicio">
+    <!-- <v-tooltip v-tooltip text="Volver a inicio">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -46,6 +44,18 @@
         </v-btn>
       </template>
     </v-tooltip>
+ -->
+    <v-card>
+      <!-- Tabs para navegar entre las páginas -->
+      <v-tabs v-model="tab" align-tabs="center">
+        <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
+        <v-tab :value="2" @click="navigateTo('/panel')"
+          >Panel de Monitoreo</v-tab
+        >
+        <v-tab :value="3" @click="navigateTo('/manual')">Manual</v-tab>
+        <v-tab :value="4" @click="navigateTo('/info')">Información</v-tab>
+      </v-tabs>
+    </v-card>
     <div class="content">
       <!-- <div id="print-section"> -->
       <div class="tabla">
@@ -467,6 +477,9 @@ export default {
       router.push("/panel");
     };
 
+    const navigateTo = (route) => {
+      router.push(route); // Navega a la ruta especificada
+    };
     const areChartsDataValid = computed(() => {
       return registros.value.length > 0;
     });
@@ -483,6 +496,7 @@ export default {
       vaciarTabla,
       remove: removeItem,
       goToMonitoringPanel,
+      navigateTo,
     };
   },
 };
@@ -554,7 +568,9 @@ h3 {
   margin-top: 1px;
   text-align: center;
 }
-
+.button-out {
+  font-size: 12px !important;
+}
 .button {
   padding: 10px 20px;
   margin: 15px;
