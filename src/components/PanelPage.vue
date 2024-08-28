@@ -354,7 +354,7 @@ export default {
       fetchData("corriente", current);
       fetchData("potencia", power);
       fetchData("temperatura", temperature);
-      fetchData("resistencia_interna", internalResistance);
+      fetchData("resistenciaI", internalResistance);
       fetchData("irradiancia", irradiance);
       fetchData("angulo", angleFromFirebase);
       isLoading.value = false;
