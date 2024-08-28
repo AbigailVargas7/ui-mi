@@ -1,17 +1,26 @@
 <template>
   <div class="background-container">
     <div class="register-container">
-      <button @click="goBack" class="back-button"></button>
+      <v-btn
+        color="cyan-lighten-4"
+        icon="mdi-arrow-left-bold"
+        elevation="4"
+        width="40px"
+        height="40px"
+        class="back-button"
+        @click="goBack"
+      ></v-btn>
+      <!-- <button @click="goBack" class="back-button"></button> -->
       <form class="register-form" @submit.prevent="handleRegister">
         <div class="form-container">
           <div class="form-group">
             <label for="username">Ingrese su Usuario</label>
-            <input 
-              type="text" 
-              id="username" 
-              v-model="username" 
-              placeholder="Nombre de usuario" 
-              required 
+            <input
+              type="text"
+              id="username"
+              v-model="username"
+              placeholder="Nombre de usuario"
+              required
             />
           </div>
           <div class="form-group">
@@ -45,12 +54,23 @@
               required
             />
           </div>
-          <button 
+          <!-- <button 
             type="submit" 
             class="register-button" 
             :disabled="loading || !isFormValid">
             {{ loading ? 'Registrando...' : 'Guardar Registro' }}
-          </button>
+          </button> -->
+          <v-btn
+            type="submit"
+            class="button"
+            color="cyan-lighten-4"
+            elevation="4"
+            rounded="xl"
+            :disabled="loading || !isFormValid"
+          >
+            {{ loading ? "Registrando..." : "Guardar Registro" }}
+          </v-btn>
+
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         </div>
       </form>
@@ -59,30 +79,38 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import { auth } from '../firebase';
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { auth } from "../firebase";
 
 export default {
   setup() {
-    const username = ref('');
-    const email = ref('');
-    const password = ref('');
-    const confirmPassword = ref('');
-    const errorMessage = ref('');
+    const username = ref("");
+    const email = ref("");
+    const password = ref("");
+    const confirmPassword = ref("");
+    const errorMessage = ref("");
     const loading = ref(false);
     const router = useRouter();
 
     // Lista de dominios permitidos
-    const allowedDomains = ['espol.edu.ec', 'otrodominio.com']; // Añade los dominios permitidos aquí
+    const allowedDomains = ["espol.edu.ec", "otrodominio.com"]; // Añade los dominios permitidos aquí
 
     const isFormValid = computed(() => {
-      return email.value && password.value && confirmPassword.value && password.value === confirmPassword.value;
+      return (
+        email.value &&
+        password.value &&
+        confirmPassword.value &&
+        password.value === confirmPassword.value
+      );
     });
 
     const validateEmailDomain = (email) => {
-      const domain = email.split('@')[1];
+      const domain = email.split("@")[1];
       return allowedDomains.includes(domain);
     };
 
@@ -99,14 +127,18 @@ export default {
 
       try {
         loading.value = true;
-        const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email.value,
+          password.value
+        );
         const user = userCredential.user;
 
         await sendEmailVerification(user);
 
         router.push({
-          path: '/',
-          query: { message: 'verify-email' }
+          path: "/",
+          query: { message: "verify-email" },
         });
       } catch (error) {
         errorMessage.value = "Error de registro: " + error.message;
@@ -116,7 +148,7 @@ export default {
     };
 
     const goBack = () => {
-      router.push('/');
+      router.push("/");
     };
 
     return {
@@ -128,15 +160,16 @@ export default {
       goBack,
       errorMessage,
       loading,
-      isFormValid
+      isFormValid,
     };
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
 /* Estilos básicos para html y body */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -174,10 +207,10 @@ html, body {
 .form-container {
   display: flex; /* Utiliza Flexbox */
   justify-content: center; /* Centra horizontalmente */
-  align-items: center; 
+  align-items: center;
   padding: 0px;
   margin-top: 10px;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 /* Estilo del formulario de registro */
@@ -220,50 +253,14 @@ html, body {
 /* Botón para regresar a la página de login */
 .back-button {
   position: absolute;
-  top: 20px; 
-  left: 20px; 
-  width: 40px;
-  height: 40px;
-  background-color: white;
-  border: 2px solid #1e90ff;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-}
-
-.back-button::before {
-  content: '←';
-  color: #1e90ff;
-  font-size: 25px;
-  font-weight: bold;
-}
-
-.back-button:hover {
-  background-color: #f0f0f0;
+  top: 20px;
+  left: 20px;
 }
 
 /* Estilo del botón de registro */
-.register-button {
-  padding: 0px;
-  background-color: white;
-  color: #23a6f0;
-  border: 2px solid #23a6f0;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  width: 166px;
-  height: 42px;
-  margin-top: 10px;
-}
-
-.register-button:hover {
-  background-color: #f0f0f0;
-  color: #1e90ff;
-  border-color: #1e90ff;
+.button {
+  margin-top: 20px;
+  font-size: 12px !important;
 }
 
 .register-button:disabled {

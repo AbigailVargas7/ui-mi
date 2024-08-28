@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <div class="top-bar-background">
       <header class="top-bar">
         <img
@@ -42,87 +42,251 @@
       <v-tabs v-model="tab" align-tabs="center">
         <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
         <v-tab :value="2" @click="navigateTo('/panel')"
-          >Panel de Monitoreo</v-tab>
-        <v-tab :value="3" @click="navigateTo('/tabla')">Tablas y Gráficas</v-tab>
+          >Panel de Monitoreo</v-tab
+        >
+        <v-tab :value="3" @click="navigateTo('/tabla')"
+          >Tablas y Gráficas</v-tab
+        >
         <v-tab :value="4" @click="navigateTo('/info')">Información</v-tab>
       </v-tabs>
     </v-card>
-    
-    
     <!-- Descripción general de la página -->
-    <div class="page-description">
-      En esta sección se explicará cada parte del panel de monitoreo y qué
-      representa.
-    </div>
-
-    <!-- Contenido principal de la página -->
     <div class="content">
-      <!-- Primer cuadro rojo con descripción -->
-      <div class="section-container top-left">
-        <div class="red-box">
-          <img
-            src="@/assets/imagen-1.png"
-            alt="Criterios y Parámetros Eléctricos de Inversor"
-            class="section-image"
-          />
-        </div>
-        <p class="section-description">
-          Criterios y Parámetros Eléctricos de Inversor
-        </p>
-        <p class="info-description">
-          En este primer recuadro se muestran en tiempo real, los valores
-          importantes recolectados del inversor, así como el total de todos los
-          paneles conectados.
-        </p>
+      <!-- <div class="description-title">
+        En esta sección se explicará cada parte del panel de monitoreo y qué
+        representa.
+      </div> -->
+      <!-- <v-card
+        class="description-title"
+        style="text-align: center"
+        title="Cómo se usa este sistema remoto?"
+        text="En esta sección se explicará como se maneja el panel de monitoreo, tablas y graficas."
+      ></v-card> -->
+
+      <div class="title">
+        <v-card
+          class="description-title"
+          style="text-align: center"
+          title="Cómo se usa este sistema remoto?"
+          text="En esta sección se explicará como se maneja el panel de monitoreo, tablas y graficas."
+        ></v-card>
       </div>
 
-      <!-- Segundo cuadro rojo con descripción -->
-      <div class="section-container bottom-left">
-        <div class="red-box">
-          <img
-            src="@/assets/imagen-2.png"
-            alt="Guardar Datos"
-            class="section-image"
-          />
+      <div class="big-content">
+        <v-card
+          class="description-title"
+          variant="text"
+          style="text-align: center"
+          title="Panel de Monitoreo y Control"
+        ></v-card>
+        <div class="cuadro">
+          <div class="cuadro-1-1">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/variables.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Variables y Parámetros</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                En esta sección se muestran datos obtenidos en tiempo real del
+                inversor y paneles, añadiendo algunas especificaciones
+                importantes para el análisis de energía fotovoltaica.
+              </v-card-text>
+            </v-card>
+          </div>
+          <div class="cuadro-1-2">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/botones1.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Botones para datos</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                El primer botón nos permite visualizar los datos guardados, el
+                segundo captura los datos presentados de variables y parámetros
+                en una tabla.
+              </v-card-text>
+            </v-card>
+          </div>
         </div>
-        <p class="section-description">Guardar Datos</p>
-        <p class="info-description">
-          En este botón se guardan los parámetros del inversor y ángulos de
-          inclinación, pueden usarse para gráficas.
-        </p>
-      </div>
+        <div class="cuadro">
+          <div class="cuadro-2-1">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/camara.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Vista de Cámara</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                En esta sección se pueden visualizar la instalación de los
+                paneles en tiempo real, es una forma de comprobar movimientos y
+                funcionamiento del sistema.
+              </v-card-text>
+            </v-card>
+          </div>
+          <div class="cuadro-2-2">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/control.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Control de inclinación</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                Este panel permite el control de inclinación del panel a través
+                de los botones, son 23 guardados de movimiento. Cada fila
+                controla un panel, siendo 3 en total. El valor mostrado es la
+                salida de un sensor de giroscopio, encargado de medir el ángulo
+                formado.
+              </v-card-text>
+            </v-card>
+          </div>
+        </div>
 
-      <!-- Tercer cuadro rojo con descripción -->
-      <div class="section-container top-right">
-        <div class="red-box">
-          <img
-            src="@/assets/imagen-3.png"
-            alt="Vista de Cámara"
-            class="section-image"
-          />
+        <v-card
+          class="description-title"
+          variant="text"
+          style="text-align: center"
+          title="Tablas y Gráficas"
+        ></v-card>
+        <div class="cuadro">
+          <div class="cuadro-3-1">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/borrar.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Botón borrar tabla</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                El primer botón que encontramos en esta pestaña nos ayuda a limpiar la tabla de datos
+                que se han guardado desde el panel, lo que permite nuevas capturas de datos. 
+              </v-card-text>
+            </v-card>
+          </div>
+          <div class="cuadro-3-2">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/tabla.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Tabla de datos</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                En esta tabla se muestran todos los datos capturados desde el panel, 
+                con datos de tiempo en que se guardaron. En la parte superior se muestran
+                las variables, abajo los valores y por último el botón que borra únicamente las filas.
+              </v-card-text>
+            </v-card>
+          </div>
         </div>
-        <p class="section-description">Vista de Cámara</p>
-        <p class="info-description">
-          En esta vista se puede apreciar en tiempo real el video de los paneles
-          solares, como forma de comprobar el funcionamiento.
-        </p>
-      </div>
+        <div class="cuadro">
+          <div class="cuadro-4-1">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/botones2.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Botones para Gráficas</v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                Por medio de estos botones los valores de la tabla se reflejan en gráficas, 
+                el primero genera las gráficas, el segundo las borra para una nueva representación.
+              </v-card-text>
+            </v-card>
+          </div>
+          <div class="cuadro-4-2">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/graficas.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Gráficas </v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                En esta sección se tienen conjuntos de gráficas realizadas con datos capturados en 
+                la tabla, para facilitar el análisis bajo diversas condiciones. 
+              </v-card-text>
+            </v-card>
+          </div>
 
-      <!-- Cuarto cuadro rojo con descripción -->
-      <div class="section-container bottom-right">
-        <div class="red-box">
-          <img
-            src="@/assets/imagen-4.png"
-            alt="Control de Inclinación de Paneles"
-            class="section-image"
-          />
         </div>
-        <p class="section-description">Control de Inclinación de Paneles</p>
-        <p class="info-description">
-          Esta es la sección donde se controla la inclinación de los paneles.
-          Puedes subir y bajar usando los botones + y -. Se observan los ángulos
-          ajustados en grados.
-        </p>
+
+        <div class="cuadro">
+          <div class="cuadro-5-1">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/botones3.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Impresiones </v-card-subtitle>
+              <v-card-text style="text-align: justify">
+                Para imprimir los datos deseados se usa el botón mostrado, realiza
+                la captura tanto de la tabla como las gráficas.
+              </v-card-text>
+            </v-card>
+          </div>
+          <div class="cuadro-5-2">
+            <v-card class="mx-auto" max-width="300">
+              <v-row align="center" justify="center" class="pa-1">
+                <v-img
+                  :src="require('@/assets/paneles.png')"
+                  height="200px"
+                  width="90%"
+                  style="margin: 5px 20px"
+                  contain
+                ></v-img>
+              </v-row>
+              <v-card-subtitle> Sistema fotovoltaico </v-card-subtitle>
+              <v-card-text style="text-align: justify">
+               <v-icon color="red" class="mr-1">mdi-heart</v-icon>
+               Recuerda que estás recibiendo datos y controlando en tiempo real un sistema fotovoltaico en 
+               la Escuela Superior Politécnica del Litoral, con el fin de facilitar la comprensión y aprendizaje sobre 
+               la generación de energía fotovoltaica. 
+               </v-card-text>
+            </v-card>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -206,33 +370,39 @@ body {
   margin-left: 30px;
 }
 
-.logout-button {
-  margin-left: 5px;
-  background-color: transparent;
-  color: #000000;
-  border: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  width: 118px;
-  height: 35px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.logout-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #000000;
-}
-
-.main-content {
+.content {
+  margin: 30px;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  padding: 20px;
-  overflow: auto;
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
 }
-
+.title {
+  width: 80%;
+  justify-content: space-around;
+  align-items: center;
+}
+.description-title {
+  margin: 5px;
+  text-align: center;
+}
+.big-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+.cuadro {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px;
+  width: 10%;
+  min-width: 80%;
+}
+/* 
 .back-button {
   padding: 0px;
   background-color: white;
@@ -297,5 +467,5 @@ body {
   font-size: 14px;
   line-height: 1.4;
   max-width: 400px;
-}
+} */
 </style>

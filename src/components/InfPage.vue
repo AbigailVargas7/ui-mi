@@ -1,30 +1,28 @@
 <template>
-  <div class="panel-back">
-    <div class="panel-container">
-      <!-- Barra superior con logo y botón de cierre de sesión -->
-      <div class="top-bar-background">
-        <header class="top-bar">
-          <img
-            src="@/assets/espol-logo.png"
-            alt="Espol Logo"
-            class="espol-logo"
-          />
-          <div class="account-info">
-            <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
-            <v-btn
-              class="button-out"
-              prepend-icon="mdi-account"
-              variant="text"
-              rounded="xl"
-              @click="logout"
-            >
-              Cerrar Sesión
-            </v-btn>
-            <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
-          </div>
-        </header>
-      </div>
-      <!-- <v-tooltip v-tooltip text="Volver a inicio">
+  <div>
+    <div class="top-bar-background">
+      <header class="top-bar">
+        <img
+          src="@/assets/espol-logo.png"
+          alt="Espol Logo"
+          class="espol-logo"
+        />
+        <div class="account-info">
+          <!-- <img src="@/assets/user-icon.png" alt="User Icon" class="user-icon" /> -->
+          <v-btn
+            class="button-out"
+            prepend-icon="mdi-account"
+            variant="text"
+            rounded="xl"
+            @click="logout"
+          >
+            Cerrar Sesión
+          </v-btn>
+          <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
+        </div>
+      </header>
+    </div>
+    <!-- <v-tooltip v-tooltip text="Volver a inicio">
       <template v-slot:activator="{ props }">
         <v-btn
           v-bind="props"
@@ -39,21 +37,20 @@
         </v-btn>
       </template>
     </v-tooltip> -->
-      <v-card>
-        <!-- Tabs para navegar entre las páginas -->
-        <v-tabs v-model="tab" align-tabs="center">
-          <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
-          <v-tab :value="2" @click="navigateTo('/panel')"
-            >Panel de Monitoreo</v-tab
-          >
-          <v-tab :value="3" @click="navigateTo('/tabla')"
-            >Tablas y Gráficas</v-tab
-          >
-          <v-tab :value="4" @click="navigateTo('/manual')">Manual</v-tab>
-        </v-tabs>
-      </v-card>
-
-      <!-- Contenido principal -->
+    <v-card>
+      <!-- Tabs para navegar entre las páginas -->
+      <v-tabs v-model="tab" align-tabs="center">
+        <v-tab :value="1" @click="navigateTo('/initial')">Inicio</v-tab>
+        <v-tab :value="2" @click="navigateTo('/panel')"
+          >Panel de Monitoreo</v-tab
+        >
+        <v-tab :value="3" @click="navigateTo('/tabla')"
+          >Tablas y Gráficas</v-tab
+        >
+        <v-tab :value="4" @click="navigateTo('/manual')">Manual</v-tab>
+      </v-tabs>
+    </v-card>
+    <div class="panel-container">
       <div class="content">
         <h1 class="page-title">Sistema de Generación de Energía On-Grid</h1>
         <p class="description">
@@ -128,7 +125,7 @@ export default {
   name: "SystemInfoPage",
   setup() {
     const router = useRouter();
-    
+
     const logout = async () => {
       try {
         await signOut(auth);
@@ -163,15 +160,6 @@ body {
   width: 100%;
   overflow: hidden;
   font-family: "Montserrat", sans-serif;
-}
-
-.panel-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
 }
 
 .panel-container {
@@ -225,7 +213,6 @@ body {
 .button-out {
   font-size: 12px !important;
 }
-
 
 .content {
   flex: 1;

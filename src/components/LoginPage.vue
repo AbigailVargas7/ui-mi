@@ -1,5 +1,5 @@
 <template>
-  <div class="back-container">
+  <div>
     <div class="login-container">
       <div class="login-image">
         <img src="@/assets/solar-panel.jpg" alt="Solar Panel" />
@@ -29,8 +29,18 @@
               />
             </div>
           </div>
-          <button type="submit" class="login-button">Iniciar Sesión</button>
+          <!-- <button type="submit" class="login-button">Iniciar Sesión</button> -->
         </form>
+        <v-btn
+            type="submit"
+            class="button"
+            color="cyan-lighten-4"
+            elevation="4"
+            rounded="xl"
+            @click="handleLogin"
+          >
+          Iniciar Sesión
+        </v-btn>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <p v-if="infoMessage" class="info-message">{{ infoMessage }}</p>
         <div class="login-links">
@@ -106,24 +116,15 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Estilo para el contenedor de fondo */
-.back-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-}
 
 /* Estilo para el contenedor principal del login */
 .login-container {
   display: flex;
-  height: 100%;
-  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
 }
-
 /* Estilo para la imagen de login */
 .login-image {
   flex: 1;
@@ -141,7 +142,6 @@ body {
   height: 100vh;
   overflow: hidden;
 }
-
 .login-image img {
   width: 95%;
   height: 95%;
@@ -155,13 +155,26 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background-color: #ffffff;
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
 }
 
 /* Estructura de los elementos del formulario */
 .form-structure {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: space-around;
+  
+}
+/* Estilo para los grupos de formularios */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
 /* Estilo del logo en el formulario */
@@ -174,15 +187,12 @@ body {
 .form {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   width: 100%;
-  max-width: 300px;
+  height: 100%;
+
 }
 
-/* Estilo para los grupos de formularios */
-.form-group {
-  margin-bottom: 25px;
-  width: 100%;
-}
 
 /* Estilo para las etiquetas de los formularios */
 .form-group label {
@@ -205,9 +215,11 @@ body {
   font-size: 14px;
   background-color: #ffffff; 
  }
-
+.button {
+  font-size: 12px !important;
+}
 /* Estilo para el botón de login */
-.login-button {
+/* .login-button {
   padding: 0px;
   background-color: white;
   color: #23a6f0;
@@ -219,14 +231,14 @@ body {
   width: 156px;
   height: 35px;
   margin: 0 auto;
-}
+} */
 
 /* Estilo para el botón de login cuando se pasa el ratón por encima */
-.login-button:hover {
+/* .login-button:hover {
   background-color: #f0f0f0;
   color: #1e90ff;
   border-color: #1e90ff;
-}
+} */
 
 /* Estilo para los enlaces de recuperación de contraseña y registro */
 .login-links {

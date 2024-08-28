@@ -14,7 +14,8 @@
             prepend-icon="mdi-account"
             variant="text"
             rounded="xl"
-            @click="logout">Cerrar Sesión
+            @click="logout"
+            >Cerrar Sesión
           </v-btn>
           <!-- <button class="logout-button" @click="logout">Cerrar Sesión</button> -->
         </div>
@@ -61,7 +62,7 @@
       <div class="tabla">
         <!-- Contenedor que agrupa la tabla y los gráficos -->
         <h3>Registro de Datos</h3>
-        <v-row justify="end" class="pa-2">
+        <v-row class="button-1">
           <v-btn
             class="button"
             color="cyan-lighten-4"
@@ -71,7 +72,7 @@
           >
             Borrar Tabla
           </v-btn>
-          <v-btn
+          <!-- <v-btn
             class="button"
             color="cyan-lighten-4"
             elevation="4"
@@ -79,7 +80,7 @@
             @click="goToMonitoringPanel"
           >
             Volver a Panel
-          </v-btn>
+          </v-btn> -->
         </v-row>
         <!-- <button @click="vaciarTabla" class="empty-button">Vaciar Tabla</button> -->
         <h3 v-if="!registros.length" class="empty-message">
@@ -169,15 +170,17 @@
           ></canvas>
         </div>
       </div>
-      <v-btn
-        class="button"
-        color="cyan-lighten-4"
-        elevation="4"
-        rounded="xl"
-        @click="imprimirPagina"
-      >
-        Imprimir Página
-      </v-btn>
+      <v-row class="buttons">
+        <v-btn
+          class="button"
+          color="cyan-lighten-4"
+          elevation="4"
+          rounded="xl"
+          @click="imprimirPagina"
+        >
+          Imprimir Página
+        </v-btn>
+      </v-row>
     </div>
   </div>
 </template>
@@ -567,6 +570,17 @@ h3 {
   margin-bottom: 1px;
   margin-top: 1px;
   text-align: center;
+}
+.buttons {
+  display: flex;
+  width: 100%;
+  padding: 10px 40px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.button-1 {
+  display: flex;
+  width: 100%;
 }
 .button-out {
   font-size: 12px !important;
