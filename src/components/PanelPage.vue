@@ -466,7 +466,7 @@ export default {
       logout,
       goToTablePage,
       goBack,
-      navigateTo,
+      navigateTo
     };
   },
 };
