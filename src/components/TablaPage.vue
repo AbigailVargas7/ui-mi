@@ -169,6 +169,30 @@
             height="125"
           ></canvas>
         </div>
+        <div
+          v-if="chartsGenerated && areChartsDataValid"
+          class="charts-container"
+        >
+          <!-- Nuevas gráficas de Voltaje, Corriente y Potencia vs Tiempo -->
+          <canvas
+            id="voltajeTimeChart"
+            width="100%"
+            max-width="150px"
+            height="125"
+          ></canvas>
+          <canvas
+            id="corrienteTimeChart"
+            width="100%"
+            max-width="150px"
+            height="125"
+          ></canvas>
+          <canvas
+            id="potenciaTimeChart"
+            width="100%"
+            max-width="150px"
+            height="125"
+          ></canvas>
+        </div>
       </div>
       <v-row class="buttons">
         <v-btn
@@ -202,6 +226,9 @@ export default {
     let voltajeChartInstance = null;
     let corrienteChartInstance = null;
     let potenciaChartInstance = null;
+    let voltajeTimeChartInstance = null;
+    let corrienteTimeChartInstance = null;
+    let potenciaTimeChartInstance = null;
 
     const fetchRegistros = () => {
       const db = getDatabase();
@@ -229,6 +256,7 @@ export default {
     const actualizarDatosGraficos = () => {
       nextTick(() => {
         const labels = registros.value.map((r) => r.angulo);
+        const timeLabels = registros.value.map((r) => r.hora);
         const voltajeData = registros.value.map((r) => r.voltaje);
         const corrienteData = registros.value.map((r) => r.corriente);
         const potenciaData = registros.value.map((r) => r.potencia);
@@ -237,6 +265,9 @@ export default {
         if (voltajeChartInstance) voltajeChartInstance.destroy();
         if (corrienteChartInstance) corrienteChartInstance.destroy();
         if (potenciaChartInstance) potenciaChartInstance.destroy();
+        if (voltajeTimeChartInstance) voltajeTimeChartInstance.destroy();
+        if (corrienteTimeChartInstance) corrienteTimeChartInstance.destroy();
+        if (potenciaTimeChartInstance) potenciaTimeChartInstance.destroy();
 
         // Gráfico de Voltaje vs Ángulo
         const voltajeCtx = document
@@ -414,8 +445,184 @@ export default {
             },
           },
         });
+        // Gráfico de Voltaje vs Tiempo
+        const voltajeTimeCtx = document
+          .getElementById("voltajeTimeChart")
+          .getContext("2d");
+        voltajeTimeChartInstance = new Chart(voltajeTimeCtx, {
+          type: "line",
+          data: {
+            labels: timeLabels,
+            datasets: [
+              {
+                label: "Voltaje",
+                data: voltajeData,
+                borderColor: "rgba(75, 192, 192, 1)",
+                fill: false,
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: "Voltaje vs Tiempo",
+                font: {
+                  size: 16,
+                },
+              },
+              legend: {
+                labels: {
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Tiempo",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Voltaje (V)",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Gráfico de Corriente vs Tiempo
+        const corrienteTimeCtx = document
+          .getElementById("corrienteTimeChart")
+          .getContext("2d");
+        corrienteTimeChartInstance = new Chart(corrienteTimeCtx, {
+          type: "line",
+          data: {
+            labels: timeLabels,
+            datasets: [
+              {
+                label: "Corriente",
+                data: corrienteData,
+                borderColor: "rgba(54, 162, 235, 1)",
+                fill: false,
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: "Corriente vs Tiempo",
+                font: {
+                  size: 16,
+                },
+              },
+              legend: {
+                labels: {
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Tiempo",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Corriente (mA)",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Gráfico de Potencia vs Tiempo
+        const potenciaTimeCtx = document
+          .getElementById("potenciaTimeChart")
+          .getContext("2d");
+        potenciaTimeChartInstance = new Chart(potenciaTimeCtx, {
+          type: "line",
+          data: {
+            labels: timeLabels,
+            datasets: [
+              {
+                label: "Potencia",
+                data: potenciaData,
+                borderColor: "rgba(255, 206, 86, 1)",
+                fill: false,
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              title: {
+                display: true,
+                text: "Potencia vs Tiempo",
+                font: {
+                  size: 16,
+                },
+              },
+              legend: {
+                labels: {
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Tiempo",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Potencia (W)",
+                  font: {
+                    size: 14,
+                  },
+                },
+              },
+            },
+          },
+        });
       });
-    };
+    };    
 
     const generarGraficos = () => {
       chartsGenerated.value = true;
@@ -427,6 +634,9 @@ export default {
       if (voltajeChartInstance) voltajeChartInstance.destroy();
       if (corrienteChartInstance) voltajeChartInstance.destroy();
       if (potenciaChartInstance) potenciaChartInstance.destroy();
+      if (voltajeTimeChartInstance) voltajeTimeChartInstance.destroy();
+      if (corrienteTimeChartInstance) corrienteTimeChartInstance.destroy();
+      if (potenciaTimeChartInstance) potenciaTimeChartInstance.destroy();
     };
 
     onMounted(() => {

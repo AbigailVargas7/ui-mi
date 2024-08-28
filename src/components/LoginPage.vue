@@ -29,16 +29,15 @@
               />
             </div>
           </div>
-          <!-- <button type="submit" class="login-button">Iniciar Sesión</button> -->
         </form>
         <v-btn
-            type="submit"
-            class="button"
-            color="cyan-lighten-4"
-            elevation="4"
-            rounded="xl"
-            @click="handleLogin"
-          >
+          type="submit"
+          class="button"
+          color="cyan-lighten-4"
+          elevation="4"
+          rounded="xl"
+          @click="handleLogin"
+        >
           Iniciar Sesión
         </v-btn>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -53,10 +52,11 @@
 </template>
 
 <script>
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { auth } from '../firebase';
+import { getDatabase, ref as dbRef, set, get, remove } from 'firebase/database';
 
 export default {
   setup() {
@@ -66,13 +66,50 @@ export default {
     const infoMessage = ref('');
     const router = useRouter();
     const route = useRoute();
+    const db = getDatabase();
+
+    const checkIfLoggedIn = async () => {
+      const loggedInRef = dbRef(db, 'loggedInUser');
+      const snapshot = await get(loggedInRef);
+      if (snapshot.exists()) {
+        const loggedInUser = snapshot.val();
+        const now = Date.now();
+        if (loggedInUser && now < loggedInUser.expiry) {
+          errorMessage.value = `El usuario ${loggedInUser.email} ya está logueado. Por favor, inténtalo más tarde.`;
+          return true;
+        } else {
+          // Si el tiempo ha expirado, eliminar la sesión
+          await remove(loggedInRef);
+          return false;
+        }
+      }
+      return false;
+    };
 
     const handleLogin = async () => {
       try {
+        const isLoggedIn = await checkIfLoggedIn();
+        if (isLoggedIn) return;
+
         const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
 
         if (user.emailVerified) {
+          const expiryTime = Date.now() + 2 * 60 * 60 * 1000; // 2 horas en milisegundos
+          const loggedInRef = dbRef(db, 'loggedInUser');
+
+          await set(loggedInRef, {
+            email: user.email,
+            uid: user.uid,
+            expiry: expiryTime,
+          });
+
+          setTimeout(async () => {
+            await signOut(auth);
+            await remove(loggedInRef);
+            router.push('/'); // Redirige a la página de login
+          }, 2 * 60 * 60 * 1000); // 2 horas en milisegundos
+
           router.push('/initial'); // Redirigir al panel si el usuario está verificado
         } else {
           errorMessage.value = "Por favor, verifica tu correo electrónico antes de iniciar sesión.";
@@ -116,7 +153,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-
 /* Estilo para el contenedor principal del login */
 .login-container {
   display: flex;
@@ -125,6 +161,7 @@ body {
   align-items: center;
   overflow: hidden;
 }
+
 /* Estilo para la imagen de login */
 .login-image {
   flex: 1;
@@ -142,6 +179,7 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
 .login-image img {
   width: 95%;
   height: 95%;
@@ -168,6 +206,7 @@ body {
   align-content: space-around;
   
 }
+
 /* Estilo para los grupos de formularios */
 .form-group {
   display: flex;
@@ -190,9 +229,7 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
-
 }
-
 
 /* Estilo para las etiquetas de los formularios */
 .form-group label {
@@ -214,31 +251,11 @@ body {
   border-radius: 5px;
   font-size: 14px;
   background-color: #ffffff; 
- }
+}
+
 .button {
   font-size: 12px !important;
 }
-/* Estilo para el botón de login */
-/* .login-button {
-  padding: 0px;
-  background-color: white;
-  color: #23a6f0;
-  border: 2px solid #23a6f0;
-  border-radius: 40px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 14px;
-  width: 156px;
-  height: 35px;
-  margin: 0 auto;
-} */
-
-/* Estilo para el botón de login cuando se pasa el ratón por encima */
-/* .login-button:hover {
-  background-color: #f0f0f0;
-  color: #1e90ff;
-  border-color: #1e90ff;
-} */
 
 /* Estilo para los enlaces de recuperación de contraseña y registro */
 .login-links {
@@ -269,6 +286,7 @@ body {
   font-weight: bold;
   margin-top: 10px;
 }
+
 /* Estilo para el mensaje informativo */
 .info-message {
   color: green;
